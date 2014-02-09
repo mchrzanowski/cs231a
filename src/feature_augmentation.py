@@ -7,6 +7,14 @@ def feature_augmentation(B, locations, coordinates=True,colors=False,Illuminatio
         print "Not a valid numpy matrix..."
         return
     else:
-        #for x in range(0, B.shape[1]):
+        x_vect=[]
+        y_vect=[]
+        
+        for i in xrange(0, B.shape[1]):
+            x_vect.append(locations[i].pt[0])
+            y_vect.append(locations[i].pt[1])
+
+        B=np.concatenate((B, x_vect), axis=0)
+        B=np.concatenate((B, y_vect), axis=0)
         return B	
 
