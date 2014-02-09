@@ -1,5 +1,6 @@
 # feature augmentation takes in a post PCA's matrix and tacks on some meta information about each column such
 # as: coordinates, colors, illumination, etc ... the columns of B are whitened sift descriptors
+import numpy
 
 def feature_augmentation(B, locations, coordinates=True,colors=False,Illumination=False):
 
@@ -14,7 +15,7 @@ def feature_augmentation(B, locations, coordinates=True,colors=False,Illuminatio
             x_vect.append(locations[i].pt[0])
             y_vect.append(locations[i].pt[1])
 
-        B=np.concatenate((B, x_vect), axis=0)
-        B=np.concatenate((B, y_vect), axis=0)
+        B=numpy.concatenate((B, x_vect), axis=0)
+        B=numpy.concatenate((B, y_vect), axis=0)
         return B	
 
