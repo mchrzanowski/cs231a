@@ -18,7 +18,6 @@ function generateAllFisherVectors
             f_q_img_path = strcat(f_q_subfolder, image.name);
             fv = generateFisherVector(f_q_img_path);
             dlmwrite(strcat(output_dir, image.name), fv);
-            return;
         end
     end
 end
