@@ -37,3 +37,6 @@ nosetests.xml
 
 # folders
 data/
+
+# Mac hidden files
+.DS_Store
