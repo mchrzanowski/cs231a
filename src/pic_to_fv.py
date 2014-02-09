@@ -13,7 +13,9 @@ class FisherVectorGenerator(object):
     def generate(self):
         img = preprocessImage(self.img_file)
         keypts, descriptors = createDenseSIFTFeatures(img)
+        print descriptors.shape
         descriptors = compressSiftFeatures(descriptors)
         descriptors = feature_augmentation(descriptors, keypts)
+        print descriptors.shape
         fv = form_feature_vector_by_mixture_of_gaussians(descriptors)
         return fv
