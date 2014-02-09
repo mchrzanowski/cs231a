@@ -4,7 +4,7 @@ from sklearn.mixture import GMM
 
 def form_feature_vector_by_mixture_of_gaussians(B,numberOfGaussians=512):
 
-    g = GMM(n_components=numberOfGaussians)
+    g = GMM(n_components=numberOfGaussians, n_iter=5)
     g.fit(B)
     means = numpy.round(g.means_, 4)
     covs = numpy.round(g.covars_, 4)

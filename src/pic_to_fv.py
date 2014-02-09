@@ -7,6 +7,7 @@ from fv import form_feature_vector_by_mixture_of_gaussians
 
 
 class FisherVectorGenerator(object):
+
     def __init__(self, img_file):
         self.img_file = img_file
 
