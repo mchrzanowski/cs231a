@@ -4,7 +4,7 @@ def createDenseSIFTFeatures(image):
     feature_detector = cv2.FeatureDetector_create('Dense')
     feature_detector.setInt('initImgBound', 18)
     feature_detector.setInt('initXyStep', 1)
-    feature_detector.setDouble('initFeatureScale', 24)
+    feature_detector.setDouble('initFeatureScale', 36)
     feature_detector.setDouble('featureScaleMul', 2 ** 0.5)
     feature_detector.setInt('featureScaleLevels', 5)
     feature_detector.setBool('varyXyStepWithScale', True)
