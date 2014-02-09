@@ -19,3 +19,13 @@ class FisherVectorGenerator(object):
         print descriptors.shape
         fv = form_feature_vector_by_mixture_of_gaussians(descriptors)
         return fv
+
+
+def main():
+    x = '/opt/cs231a/lfw/Aaron_Eckhart/Aaron_Eckhart_0001.jpg'
+    fvg = FisherVectorGenerator(x)
+    y = fvg.generate()
+    print len(y)
+
+if __name__ == "__main__":
+    main()

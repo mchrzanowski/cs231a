@@ -1,10 +1,10 @@
 # fv.py takes in an augmented matrix of sift descriptors and performs Mixture of Guassians 
 import numpy
-from sklearn import mixture
+from sklearn.mixture import GMM
 
 def form_feature_vector_by_mixture_of_gaussians(B,numberOfGaussians=512):
 
-    g = mixture.GMM(n_components=numberOfGaussians)
+    g = GMM(n_components=numberOfGaussians)
     g.fit(B)
     means = numpy.round(g.means_, 4)
     covs = numpy.round(g.covars_, 4)
