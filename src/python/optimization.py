@@ -3,7 +3,7 @@ from numpy.linalg import norm
 from numpy import dot
 
 def subgradient_optimization(W, fvs, person_to_indices, eta=0.01, iterations=1000000):
-    b = random.rand() * fvs.shape(1)
+    b = random.rand()
     for i in xrange(1, iterations + 1):
         if random.rand() < 0.5
             while True:
@@ -25,6 +25,6 @@ def subgradient_optimization(W, fvs, person_to_indices, eta=0.01, iterations=100
         # update W & b
         if y * (b - dist) < 1:
             W -= eta * y * dot(dot(W, fv_diff), fv_diff.T)
-            b += (1 + dist - b) / i     # iterative mean update.
+            b += (y + dist - b) / (i + 1)     # iterative mean update.
 
     return W
