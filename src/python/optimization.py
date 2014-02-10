@@ -3,8 +3,8 @@ from numpy.linalg import norm
 from numpy import dot
 
 def subgradient_optimization(W, fvs, person_to_indices, eta=0.01, iterations=1000000):
-    b = random.rand()
-    for i in xrange(1, iterations + 1):
+    b = 0
+    for i in xrange(iterations):
         if random.rand() < 0.5
             while True:
                 person = random.choice(person_to_indices)
