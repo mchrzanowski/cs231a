@@ -1,17 +1,19 @@
+import constants
 import numpy
 import pickle
+import random
 
 def main():
-    fvs, person_to_indices = pickle.load(open('./lol', 'rb'))
-    W = pickle.load(open('./w_matrix', 'rb'))
+    fvs, person_to_indices = pickle.load(open(constants.FV_AND_MAPPING_FILE, 'rb'))
+    W = pickle.load(open(constants.W_MATRIX_FILE, 'rb'))
 
     # tp = really +1, pred +1
     # fp = really -1, pred +1
     # fn = really +1, pred -1
     # tn = really -1, pred -1
-    tp = fp = fn = tn
+    tp = fp = fn = tn = 0
     keys = [person for person in person_to_indices]
-    trials = 600.
+    trials = 600
     for i in xrange(trials):
         if i < trials / 2:
             while True:
@@ -19,7 +21,7 @@ def main():
                 if len(person_to_indices[person]) == 1:
                     continue
                 i, j = random.sample(person_to_indices[person], 2)
-                ground_truth = +1
+                y = +1
                 break
         else:
             first_person, second_person = random.sample(person_to_indices, 2)
