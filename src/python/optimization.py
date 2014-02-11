@@ -27,6 +27,6 @@ def subgradient_optimization(W, fvs, person_to_indices, eta=0.01, iterations=100
         # update W & b
         if y * (b - dist) < 1:
             W -= eta * y * outer(first_op, fv_diff)
-            b += (y + dist - b) / (i + 1)     # iterative mean update.
+            b += eta * y
 
     return W
