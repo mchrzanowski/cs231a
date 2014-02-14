@@ -4,9 +4,9 @@ from numpy import dot, outer
 
 def subgradient_optimization(W, fvs, person_to_indices, training_same, training_diff, eta=0.01, iterations=1000000, verbose=False):
     b = 0
-    if verbose: print('Begin Subgradient Gradient Descent Learning...')
+    if verbose: print 'Begin Subgradient Gradient Descent Learning...'
     for i in xrange(iterations):
-        if verbose and i % 1000 == 0: print('Iteration: %s' % i)
+        if verbose and i % 1000 == 0: print 'Iteration: %s' % i
         if random.random() > 0.5:
             sample = random.choice(training_same)
             y = +1
@@ -26,5 +26,5 @@ def subgradient_optimization(W, fvs, person_to_indices, training_same, training_
             W -= eta * y * outer(first_op, fv_diff)
             b += eta * y
 
-    if verbose: print('Optimization Complete!')
+    if verbose: print 'Optimization Complete!'
     return W

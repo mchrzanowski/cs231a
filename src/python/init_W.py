@@ -25,19 +25,19 @@ def init_W(images_to_use=None, verbose=False):
         fvs[:, i] = fv
         image_to_index[name] = i
 
-    if verbose: print('Finished FV Matrix Construction')
+    if verbose: print 'Finished FV Matrix Construction'
 
     cPickle.dump(fvs, open(constants.FV_FILE, 'wb'))
     cPickle.dump(image_to_index, open(constants.IMAGE_TO_INDEX_FILE, 'wb'))
     del image_to_index
 
-    if verbose: print('Finished pickling FV matrix and image mapping.')
-    if verbose: print('Start on PCA...')
-    
+    if verbose: print 'Finished pickling FV matrix and image mapping.'
+    if verbose: print 'Start on PCA...'
+
     pca = RandomizedPCA(n_components=128, whiten=True)
     W = pca.fit_transform(fvs).T
 
-    if verbose: print('PCA complete.')
+    if verbose: print 'PCA complete.'
     cPickle.dump(W, open(constants.W_MATRIX_FILE, 'wb'))
 
 if __name__ == "__main__":
