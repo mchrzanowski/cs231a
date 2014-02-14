@@ -1,50 +1,44 @@
 # this pulls in all the phis and performs PCA on it
+import constants
+import cPickle
 import os
 import numpy
-from sklearn.decomposition import PCA
-import pickle
 import re
-def init_W():
+import utilities
 
-    input_dir='/opt/cs231a/serialized/fvs'
-    W = []
-    for name in os.listdir(input_dir):
+from sklearn.decomposition import RandomizedPCA
+
+def init_W(images_to_use=None, verbose=False):
+
+    input_dir = constants.FV_DIR
+    if images_to_use is None:
+        fv_files = [name for name in os.listdir(input_dir)]
+        fvs = numpy.zeros((67584, len(fv_files))) 
+    else:
+        fv_files = images_to_use
+        fvs = numpy.zeros((67584, len(images_to_use)))
+
+    image_to_index = dict()
+    for i, name in enumerate(fv_files):
         input_file = os.path.join(input_dir,name)
-        with open(input_file) as f:
-            #w, h = [float(x) for x in f.readline().split()]
-            #array = [[float(x) for x in line.split()] for line in f]
-            s= numpy.genfromtxt(input_file, delimiter=',')
+        fv = utilities.hydrate_fv_from_file(input_file)
+        fvs[:, i] = fv
+        image_to_index[name] = i
 
-            W.append(numpy.true_divide(s,numpy.linalg.norm(s,ord=2)))
-           
+    if verbose: print('Finished FV Matrix Construction')
 
-    W_matrix=numpy.asarray(W)
-    print('finished matrix comp')
+    cPickle.dump(fvs, open(constants.FV_FILE, 'wb'))
+    cPickle.dump(image_to_index, open(constants.IMAGE_TO_INDEX_FILE, 'wb'))
+    del image_to_index
+
+    if verbose: print('Finished pickling FV matrix and image mapping.')
+    if verbose: print('Start on PCA...')
     
-    pca = PCA(n_components=128, whiten=True)
-    B = pca.fit_transform(W_matrix.T)
-    numpy.savetxt("initd_W_128.csv", B, delimiter=",")
-    return B
+    pca = RandomizedPCA(n_components=128, whiten=True)
+    W = pca.fit_transform(fvs).T
 
-def create_total_dict():
-    input_dir='/opt/cs231a/serialized/fvs'
-    fv_dict = dict()
-    for name in os.listdir(input_dir):
-        input_file = os.path.join(input_dir,name)
-        with open(input_file) as f:
-            #w, h = [float(x) for x in f.readline().split()]
-            #array = [[float(x) for x in line.split()] for line in f]
-            s= numpy.genfromtxt(input_file, delimiter=',')
-            word1 = "".join(re.findall("[a-zA-Z]+", name))
-            word = word1[:-3]
-            if word in fv_dict:
-                fv_dict[word]= numpy.concatenate((fv_dict[word],numpy.true_divide(s,numpy.linalg.norm(s,ord=2))),axis=0)
-            else:
-                fv_dict[word]=numpy.true_divide(s,numpy.linalg.norm(s,ord=2))
-    return fv_dict
+    if verbose: print('PCA complete.')
+    cPickle.dump(W, open(constants.W_MATRIX_FILE, 'wb'))
 
-
-
-
-
-
+if __name__ == "__main__":
+    init_W()

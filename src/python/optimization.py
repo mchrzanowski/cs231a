@@ -2,23 +2,20 @@ import random
 from numpy.linalg import norm
 from numpy import dot, outer
 
-def subgradient_optimization(W, fvs, person_to_indices, eta=0.01, iterations=1000000):
+def subgradient_optimization(W, fvs, person_to_indices, training_same, training_diff, eta=0.01, iterations=1000000, verbose=False):
     b = 0
+    if verbose: print('Begin Subgradient Gradient Descent Learning...')
     for i in xrange(iterations):
-        if i % 1000 == 0: print i
-        if random.random() < 0.5:
-            while True:
-                person = random.choice(person_to_indices.keys())
-                if len(person_to_indices[person]) == 1:
-                    continue
-                i, j = random.sample(person_to_indices[person], 2)
-                y = +1
-                break
+        if verbose and i % 1000 == 0: print('Iteration: %s' % i)
+        if random.random() > 0.5:
+            sample = random.choice(training_same)
+            y = +1
         else:
-            first_person, second_person = random.sample(person_to_indices, 2)
-            i = random.choice(person_to_indices[first_person])
-            j = random.choice(person_to_indices[second_person])
+            sample = random.choice(training_diff)
             y = -1
+
+        i = person_to_indices[sample[0]]
+        j = person_to_indices[sample[1]]
 
         fv_diff = fvs[:, i] - fvs[:, j]
         first_op = dot(W, fv_diff)
@@ -29,4 +26,5 @@ def subgradient_optimization(W, fvs, person_to_indices, eta=0.01, iterations=100
             W -= eta * y * outer(first_op, fv_diff)
             b += eta * y
 
+    if verbose: print('Optimization Complete!')
     return W
