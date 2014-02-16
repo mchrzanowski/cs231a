@@ -1,8 +1,12 @@
+import constants
+import os
 import random
+import utilities
+
 from numpy.linalg import norm
 from numpy import dot, outer
 
-def subgradient_optimization(W, fvs, person_to_indices, training_same, training_diff, eta=0.01, iterations=1000000, verbose=False):
+def subgradient_optimization(W, training_same, training_diff, fvs=None, image_to_index=None, eta=0.01, iterations=1000000, verbose=False):
     b = 0
     if verbose: print 'Begin Subgradient Gradient Descent Learning...'
     for i in xrange(iterations):
@@ -14,10 +18,16 @@ def subgradient_optimization(W, fvs, person_to_indices, training_same, training_
             sample = random.choice(training_diff)
             y = -1
 
-        i = person_to_indices[sample[0]]
-        j = person_to_indices[sample[1]]
+        img1, img2 = sample
 
-        fv_diff = fvs[:, i] - fvs[:, j]
+        if fvs is None or image_to_index is None:
+            fv1 = utilities.hydrate_fv_from_file(os.path.join(constants.FV_DIR, img1))
+            fv2 = utilities.hydrate_fv_from_file(os.path.join(constants.FV_DIR, img2))
+        else:
+            fv1 = fvs[:, image_to_index[img1]]
+            fv2 = fvs[:, image_to_index[img2]]
+
+        fv_diff = fv1 - fv2
         first_op = dot(W, fv_diff)
         dist = norm(first_op, 2) ** 2
 
