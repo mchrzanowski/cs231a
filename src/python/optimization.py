@@ -1,4 +1,5 @@
 import constants
+import cPickle
 import os
 import random
 import utilities
@@ -6,16 +7,16 @@ import utilities
 from numpy.linalg import norm
 from numpy import dot, outer
 
-def subgradient_optimization(W, training_same, training_diff, fvs=None, image_to_index=None, eta=0.01, iterations=1000000, verbose=False):
+def subgradient_optimization(W, dataset, fvs=None, image_to_index=None, w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False):
     b = 0
     if verbose: print 'Begin Subgradient Gradient Descent Learning...'
     for i in xrange(iterations):
         if verbose and i % 1000 == 0: print 'Iteration: %s' % i
         if random.random() > 0.5:
-            sample = random.choice(training_same)
+            sample = dataset.get_same_person_train_sample()
             y = +1
         else:
-            sample = random.choice(training_diff)
+            sample = dataset.get_diff_person_train_sample()
             y = -1
 
         img1, img2 = sample
@@ -33,8 +34,12 @@ def subgradient_optimization(W, training_same, training_diff, fvs=None, image_to
 
         # update W & b
         if y * (b - dist) < 1:
-            W -= eta * y * outer(first_op, fv_diff)
-            b += eta * y
+            W -= w_eta * y * outer(first_op, fv_diff)
+            b += b_eta * y
 
     if verbose: print 'Optimization Complete!'
-    return W
+    if cache: cPickle.dump(W, open(constants.W_MATRIX_FILE, 'wb'))
+    if verbose: print 'Learned b: %s' % b
+    if cache: cPickle.dump(b, open(constants.B_FILE, 'wb'))
+
+    return W, b

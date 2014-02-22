@@ -6,11 +6,10 @@ function fv = generateFisherVector(img_file)
     img = imresize(img, [160, 125]);
 
     [keypts descriptors] = generateDenseSIFTDescriptors(img);
-
-    descriptors = pcaAndWhiten(descriptors);
+    descriptors = performPCA(descriptors);
     descriptors = [descriptors; keypts];
 
     [means, cov_diags, priors] = vl_gmm(descriptors, 512);
-    fv = vl_fisher(descriptors, means, cov_diags, priors);
+    fv = vl_fisher(descriptors, means, cov_diags, priors, 'Improved');
 
 end
