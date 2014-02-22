@@ -80,7 +80,6 @@ class DevDataset(Dataset):
 
         return images_required, same_person_pairs, diff_person_pairs
 
-
 class RealDataset(DevDataset):
     def __init__(self, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
         self.split = split
@@ -90,7 +89,6 @@ class RealDataset(DevDataset):
         self.test_images, \
         self.test_same_person_pairs, \
         self.test_diff_person_pairs = self.init(filename, split)
-
 
     def print_dataset_stats(self):
         print 'Split: %s' % self.split
@@ -114,7 +112,7 @@ class RealDataset(DevDataset):
             end_test_index = split * pairs_per_split
             for i, line in enumerate(f):
                 
-                if i >= start_test_index and i <= end_test_index:
+                if i >= start_test_index and i < end_test_index:
                     images = test_images
                     same_pairs = test_same_pairs
                     diff_pairs = test_diff_pairs
