@@ -234,7 +234,7 @@ class dA(object):
 
 def train(dataset, hidden_units, learning_rate=0.01, training_epochs=15,
     batch_size=20, corruption_level=0.3, verbose=True):
-    ''' dataset is a n x m matrix, where m (the cols) is the # of samples '''
+    """ dataset is a n x m matrix, where m (the cols) is the # of samples """
 
     visible_units = dataset.shape[0]
     dataset = theano.shared(dataset.T)  # rows are instances in Theano.
