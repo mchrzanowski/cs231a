@@ -7,11 +7,12 @@ import utilities
 from numpy.linalg import norm
 from numpy import dot, outer
 
-def subgradient_optimization(W, dataset, fvs=None, image_to_index=None, w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False):
+def ssgd(W, dataset, fvs=None, image_to_index=None,
+    w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False):
     b = 0
-    if verbose: print 'Begin Subgradient Gradient Descent Learning...'
+    if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
     for i in xrange(iterations):
-        if verbose and i % 1000 == 0: print 'Iteration: %s' % i
+        if verbose and i % 100000 == 0: print 'Iteration: %s' % i
         if random.random() > 0.5:
             sample = dataset.get_same_person_train_sample()
             y = +1

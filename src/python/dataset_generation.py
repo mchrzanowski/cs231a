@@ -9,11 +9,16 @@ class Dataset(object):
         return person + '_' + image_num + '.csv'
 
     def get_fv_file_for_image(self, image):
-        return os.path.join(constants.FV_DIR, image)
+        return os.path.join(self.base_dir, image)
+
+    def print_dataset_stats(self):
+        print 'Type: %s' % self.__class__.__name__
+        print 'LFW Dataset Directory: %s' % self.base_dir
 
 class DevDataset(Dataset):
-    def __init__(self, train_filename=constants.DEV_TRAIN_PAIR_FILE,
+    def __init__(self, base_dir, train_filename=constants.DEV_TRAIN_PAIR_FILE,
     test_filename=constants.DEV_TEST_PAIR_FILE):
+        self.base_dir = base_dir
         self.train_images, \
         self.train_same_person_pairs, \
         self.train_diff_person_pairs = self.init(train_filename)
@@ -48,6 +53,7 @@ class DevDataset(Dataset):
             yield pair
 
     def print_dataset_stats(self):
+        Dataset.print_dataset_stats(self)
         print 'Training: Images Required: %s' % len(self.train_images)
         print 'Training: Same Pairs: %s' % len(self.train_same_person_pairs)
         print 'Training: Diff Pairs: %s' % len(self.train_diff_person_pairs)
@@ -80,8 +86,9 @@ class DevDataset(Dataset):
 
         return images_required, same_person_pairs, diff_person_pairs
 
-class RealDataset(DevDataset):
-    def __init__(self, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+class RestrictedDataset(DevDataset):
+    def __init__(self, base_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+        self.base_dir = base_dir
         self.split = split
         self.train_images, \
         self.train_same_person_pairs, \
@@ -91,8 +98,8 @@ class RealDataset(DevDataset):
         self.test_diff_person_pairs = self.init(filename, split)
 
     def print_dataset_stats(self):
+        Dataset.print_dataset_stats(self)
         print 'Split: %s' % self.split
-        DevDataset.print_dataset_stats(self)
 
     def init(self, filename, split):
         '''
@@ -138,60 +145,120 @@ class RealDataset(DevDataset):
         return train_images, train_same_pairs, train_diff_pairs, \
             test_images, test_same_pairs, test_diff_pairs
 
-'''
-class RandomDataset(Dataset):
-    def __init__(self, train_to_test_ratio=0.8):
-        self.train_person_to_images, \
-        self.test_person_to_images = self.init(train_to_test_ratio)
-
-    def init(self, train_to_test_ratio):
-        train_person_to_images = dict()
-        test_person_to_images = dict()
-        for person_dir in os.listdir(constants.LFW_DIR):
-            if random.random() < train_to_test_ratio:
-                mapping = train_person_to_images
-            else:
-                mapping = test_person_to_images
-
-            mapping[person_dir] = list()
-            for img_file in os.listdir(os.path.join(constants.LFW_DIR, person_dir)):
-                mapping[person_dir].append(img_file)
-
-        return train_person_to_images, test_person_to_images
-
-    def __diff_person_sample(self, mapping):
-        first_person, second_person = random.sample(mapping, 2)
-        first_img = random.choice(mapping[first_person])
-        second_img = random.choice(mapping[second_person])
-        return first_img, second_img
-
-    def __same_person_sample(self, mapping):
-        while True:
-            person = random.choice(mapping.keys())
-            if len(mapping[person]) == 1:
-                continue
-            return random.sample(mapping[person], 2)
-
-    def get_same_person_train_sample(self):
-        return self.__same_person_sample(self.train_person_to_images)
-
-    def get_same_person_test_sample(self):
-        return self.__same_person_sample(self.test_person_to_images)
-
-    def get_diff_person_train_sample(self):
-        return self.__diff_person_sample(self.train_person_to_images)
-
-    def get_diff_person_test_sample(self):
-        return self.__diff_person_sample(self.test_person_to_images)
+class UnrestrictedDataset(DevDataset):
+    def __init__(self, base_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+        self.base_dir = base_dir
+        self.split = split
+        self.train_images, \
+        self.train_persons_to_imgs, \
+        self.test_images, \
+        self.test_persons_to_imgs = self.init(filename, split)
 
     def get_train_images(self):
-        images = list()
-        for person in self.train_person_to_images:
-            for img in self.train_person_to_images[person]:
-                images.append(img)
-        return images
+        return self.train_images
+
+    def __get_same_person_sample(self, mapping):
+        while True:
+            person = random.choice(mapping.keys())
+            if len(mapping[person]) > 1:
+                break
+        # sample w/o replacement. 
+        imgs = list(mapping[person]) # copy: careful to not change state...
+        img1 = random.choice(imgs)
+        imgs.remove(img1)
+        img2 = random.choice(imgs)
+        return img1, img2
+
+    def __get_diff_person_sample(self, mapping):
+        population = mapping.keys()     # copy for sampling w/o replacement.
+        person1 = random.choice(population)
+        img1 = random.choice(mapping[person1])
+        population.remove(person1)
+        person2 = random.choice(population)
+        img2 = random.choice(mapping[person2])
+        return img1, img2
+
+    def get_same_person_train_sample(self):
+        return self.__get_same_person_sample(self.train_persons_to_imgs)
+
+    def get_diff_person_train_sample(self):
+        return self.__get_diff_person_sample(self.train_persons_to_imgs)
+
+    def gen_same_person_test_samples(self, number=3000):
+        for _ in xrange(number):
+            yield self.__get_same_person_sample(self.test_persons_to_imgs)
+
+    def gen_same_person_train_samples(self, number=3000):
+        for _ in xrange(number):
+            yield self.__get_same_person_sample(self.train_persons_to_imgs)
+
+    def gen_diff_person_test_samples(self, number=3000):
+        for _ in xrange(number):
+            yield self.__get_diff_person_sample(self.test_persons_to_imgs)
+
+    def gen_diff_person_train_samples(self, number=3000):
+        for _ in xrange(number):
+            yield self.__get_diff_person_sample(self.train_persons_to_imgs)
 
     def print_dataset_stats(self):
-        print 'Training: Unique Persons: %s' % len(self.train_person_to_images)
-        print 'Testing: Unique Persons: %s' % len(self.test_person_to_images)
-'''
+        Dataset.print_dataset_stats(self)
+        print 'Split: %s' % self.split
+        train_persons = float(len(self.train_persons_to_imgs))
+        train_imgs = float(len(self.train_images))
+        print 'Train: Total Persons: %s' % train_persons
+        print 'Train: Total Imgs: %s' % train_imgs
+        print 'Train: Mean Imgs per Person: %s' % (train_imgs / train_persons)
+        test_persons = float(len(self.test_persons_to_imgs))
+        test_imgs = float(len(self.test_images))
+        print 'Test: Total Persons: %s' % test_persons
+        print 'Test: Total Imgs: %s' % test_imgs
+        print 'Test: Avg Imgs per Person: %s' % (test_imgs / test_persons)
+
+    def init(self, filename, split):
+        '''
+        assume splits are 600 a piece, with 300 same pairs first
+        and 300 same pairs afterwards
+        '''
+        assert split >= 1 and split <= 10
+        return self.__create_person_to_img_maps(filename, split)
+
+    def __create_person_to_img_maps(self, filename, split):
+        train_person_to_imgs = dict()
+        test_person_to_imgs = dict()
+        train_images = set()
+        test_images = set()
+        with open(filename, 'rb') as f:
+            pairs_per_split = 600
+            start_test_index = (split - 1) * pairs_per_split
+            end_test_index = split * pairs_per_split
+            for i, line in enumerate(f):
+                
+                if i >= start_test_index and i < end_test_index:    # test
+                    person_to_img = test_person_to_imgs
+                    imgs = test_images
+                else:   # train.
+                    person_to_img = train_person_to_imgs
+                    imgs = train_images
+
+                data = line.strip().split('\t')
+                if len(data) == 3:      # same person
+                    person, img1, img2 = data
+                    img1 = self.convert_to_filename(person, img1)
+                    img2 = self.convert_to_filename(person, img2)
+                    if person not in person_to_img: person_to_img[person] = list()
+                    person_to_img[person].append(img1)
+                    person_to_img[person].append(img2)
+                else:                   # different people
+                    person1, img1, person2, img2 = data
+                    img1 = self.convert_to_filename(person1, img1)
+                    img2 = self.convert_to_filename(person2, img2)
+                    
+                    if person1 not in person_to_img: person_to_img[person1] = list()
+                    person_to_img[person1].append(img1)
+
+                    if person2 not in person_to_img: person_to_img[person2] = list()
+                    person_to_img[person2].append(img2)
+                imgs.add(img1)
+                imgs.add(img2)
+
+        return train_images, train_person_to_imgs, test_images, test_person_to_imgs
