@@ -6,22 +6,26 @@ import pickle
 import utilities
 import init_W
 
-from dataset_generation import RealDataset
+import dataset_generation
 
-def run(in_mem, verbose):
-    dataset = RealDataset(split=1)
-    W, b = train(dataset, in_mem)
-    test(dataset, W, b, 'Train', verbose)
-    test(dataset, W, b, 'Test', verbose)
+def run(deep_learning=False, debug=False, verbose=False):
+    if debug:
+        dataset = dataset_generation.DevDataset()
+    else:
+        dataset = dataset_generation.UnrestrictedDataset(split=1)
 
-def test(dataset, W, b, type, verbose=False):
+    W, b, fvs, images_to_indices, da = train(dataset, deep_learning, debug, verbose)
+    test(dataset, W, b, 'Train', da=da, fvs=fvs, images_to_indices=images_to_indices, verbose=verbose)
+    test(dataset, W, b, 'Test', da=da, verbose=verbose)
 
-    if verbose: print 'Getting %s Error' % type
+def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose=False):
+
+    if verbose: print 'Getting %s Error...' % type
     # tp = really +1, pred +1
     # fp = really -1, pred +1
     # fn = really +1, pred -1
     # tn = really -1, pred -1
-    tp = fp = fn = tn = 0
+    tp = fp = fn = tn = 0.
 
     if type == 'Train':
         same_data = dataset.gen_same_person_train_samples
@@ -40,9 +44,22 @@ def test(dataset, W, b, type, verbose=False):
     for (label, data) in labels_and_data:
         for (img1, img2) in data():
 
-            img1, img2 = map(dataset.get_fv_file_for_image, (img1, img2))
-            fv1, fv2 = map(utilities.hydrate_fv_from_file, (img1, img2))
-            
+            if images_to_indices is not None and img1 in images_to_indices:
+                fv1 = fvs[:, images_to_indices[img1]]
+            else:
+                img1 = dataset.get_fv_file_for_image(img1)
+                fv1 = utilities.hydrate_fv_from_file(img1)
+                if da is not None:
+                    fv1 = da.get_hidden_values(fv1).eval()
+
+            if images_to_indices is not None and img2 in images_to_indices:
+                fv2 = fvs[:, images_to_indices[img2]]
+            else:
+                img2 = dataset.get_fv_file_for_image(img2)
+                fv2 = utilities.hydrate_fv_from_file(img2)
+                if da is not None:
+                    fv2 = da.get_hidden_values(fv2).eval()
+
             dist = get_distance(W, b, label, fv1, fv2)
             if dist > 1 and label == +1:
                 tp += 1
@@ -62,25 +79,33 @@ def test(dataset, W, b, type, verbose=False):
     print 'FN: %s' % fn
     print 'TN: %s' % tn
 
-def train(dataset, in_mem=True, verbose=True):
+def train(dataset, deep_learning=False, debug=False, verbose=True):
 
-    if verbose: print 'FV DIR: %s' % constants.FV_DIR
+    if verbose:
+        print 'Fisher Vector Directory: %s' % constants.FV_DIR
+        print 'Deep-Learning Mode: %s' % deep_learning
+        print 'Debug Mode: %s' % debug
+        dataset.print_dataset_stats()
 
-    dataset.print_dataset_stats()
-    if in_mem:
-        W, fvs, images_to_indices = init_W.init_W_with_indices(dataset, verbose=True)
-        W, b = optimization.subgradient_optimization(W, dataset, fvs=fvs,
-            image_to_index=images_to_indices, verbose=True)
+    if deep_learning:
+        W, da, fvs, images_to_indices = init_W.init_deepnet(dataset, debug, verbose)
     else:
-        W = init_W.init_W(dataset, verbose=True)
-        W, b = optimization.subgradient_optimization(W, dataset, verbose=True)
+        W, fvs, images_to_indices = init_W.init(dataset, debug, verbose)
+        da = None
+    if debug:
+        W, b = optimization.ssgd(W, dataset, fvs=fvs, iterations=0, cache=False,
+            image_to_index=images_to_indices, verbose=verbose)
+    else:
+        W, b = optimization.ssgd(W, dataset, fvs=fvs,
+            image_to_index=images_to_indices, verbose=verbose)
     
-    return W, b
+    return W, b, fvs, images_to_indices, da
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-nm', action='store_false', help="Be memory-efficient: don't do everything in memory")
+    parser.add_argument('-d', action='store_true', help="Debug mode.")
+    parser.add_argument('-dl', action='store_true', help="Deep Learning mode.")
     parser.add_argument('-v', action='store_true', help="Verbose mode.")
     args = vars(parser.parse_args())
-    run(args['nm'], args['v'])
+    run(args['dl'], args['d'], args['v'])

@@ -30,6 +30,7 @@
 
 """
 
+import constants
 import cPickle
 import gzip
 import os
@@ -66,9 +67,8 @@ class dA(object):
 
     """
 
-    def __init__(self, n_visible, n_hidden, numpy_rng=None,
-                theano_rng=None, input=None,
-                W=None, bhid=None, bvis=None):
+    def __init__(self, input, n_visible, n_hidden, numpy_rng=None,
+                theano_rng=None, W=None, bhid=None, bvis=None):
         """
         Initialize the dA class by specifying the number of visible units (the
         dimension d of the input ), the number of hidden units ( the dimension
@@ -232,34 +232,35 @@ class dA(object):
 
         return (cost, updates)
 
-def train(dataset, learning_rate=0.01, training_epochs=15,
+def train(dataset, hidden_units, learning_rate=0.01, training_epochs=15,
     batch_size=20, corruption_level=0.3, verbose=True):
+    ''' dataset is a n x m matrix, where m (the cols) is the # of samples '''
 
+    visible_units = dataset.shape[0]
     dataset = theano.shared(dataset.T)  # rows are instances in Theano.
     n_train_batches = dataset.get_value(borrow=True).shape[0] / batch_size
     index = T.lscalar()
     x = T.matrix('x')
 
-    da = dA(input=x, n_visible=constants.FV_DIM, n_hidden=constants.FV_DIM // 2)
+    da = dA(input=x, n_visible=visible_units, n_hidden=hidden_units)
 
     cost, updates = da.get_cost_updates(corruption_level=corruption_level,
                                         learning_rate=learning_rate)
 
     train_da = theano.function([index], cost, updates=updates,
-         givens={x: train_set_x[index * batch_size:
-                                  (index + 1) * batch_size]})
+         givens={x: dataset[index * batch_size: (index + 1) * batch_size]})
 
-    start_time = time.clock()
-
+    if verbose:
+        start_time = epoch_time = time.clock()
     for epoch in xrange(training_epochs):
         c = []
         for batch_index in xrange(n_train_batches):
             c.append(train_da(batch_index))
-        if verbose: print 'Epoch %d\tCost: %s\tRuntime: %s' % (epoch, numpy.mean(c), (time.clock() - start_time))
+        if verbose:
+            epoch_end = time.clock()
+            print 'Epoch: {0:3d} Cost: {1:4.2f} Runtime: {2:3.2f} secs.'.format(epoch, numpy.mean(c), (epoch_end - epoch_time))
+            epoch_time = epoch_end
 
     if verbose: print 'Total Runtime: %s' % (time.clock() - start_time)
 
-    return dA
-
-if __name__ == '__main__':
-    train()
+    return da

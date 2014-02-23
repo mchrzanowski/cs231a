@@ -14,3 +14,4 @@ DEV_TEST_PAIR_FILE = '/opt/cs231a/data/pairsDevTest.txt'
 PAIR_FILE = '/opt/cs231a/data/pairs.txt'
 
 FV_DIM = 67584
+DA_FV_DIM = FV_DIM // 2
