@@ -12,7 +12,7 @@ def create_FV_matrix(dataset, get_indices=False):
 
     images = dataset.get_train_images()
 
-    fvs = numpy.zeros((67584, len(images)))
+    fvs = numpy.zeros((constants.FV_DIM, len(images)))
     fvs = fvs.astype(numpy.float32, copy=False)
 
     if get_indices: images_to_index = dict()

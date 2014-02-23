@@ -39,7 +39,7 @@ def test(dataset, W, b, type, verbose=False):
 
     for (label, data) in labels_and_data:
         for (img1, img2) in data():
-            
+
             img1, img2 = map(dataset.get_fv_file_for_image, (img1, img2))
             fv1, fv2 = map(utilities.hydrate_fv_from_file, (img1, img2))
             
@@ -55,8 +55,8 @@ def test(dataset, W, b, type, verbose=False):
 
     total = tp + fp + fn + tn
     print 'Total: %s' % total
-    print 'Precision: %s' % (tp / (1e-4 + tp + fp))
-    print 'Recall: %s' % (tp / (1e-4 + tp + fn))
+    print 'Precision: %s' % (tp / (tp + fp))
+    print 'Recall: %s' % (tp / (tp + fn))
     print 'TP: %s' % tp
     print 'FP: %s' % fp
     print 'FN: %s' % fn

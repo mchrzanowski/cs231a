@@ -12,7 +12,7 @@ def subgradient_optimization(W, dataset, fvs=None, image_to_index=None, w_eta=0.
     if verbose: print 'Begin Subgradient Gradient Descent Learning...'
     for i in xrange(iterations):
         if verbose and i % 1000 == 0: print 'Iteration: %s' % i
-        if random.random() > 0.5:
+        if random.random() > 0.7:
             sample = dataset.get_same_person_train_sample()
             y = +1
         else:
