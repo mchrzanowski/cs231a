@@ -9,11 +9,16 @@ class Dataset(object):
         return person + '_' + image_num + '.csv'
 
     def get_fv_file_for_image(self, image):
-        return os.path.join(constants.FV_DIR, image)
+        return os.path.join(self.base_dir, image)
+
+    def print_dataset_stats(self):
+        print 'Type: %s' % self.__class__.__name__
+        print 'LFW Dataset Directory: %s' % self.base_dir
 
 class DevDataset(Dataset):
-    def __init__(self, train_filename=constants.DEV_TRAIN_PAIR_FILE,
+    def __init__(self, base_dir, train_filename=constants.DEV_TRAIN_PAIR_FILE,
     test_filename=constants.DEV_TEST_PAIR_FILE):
+        self.base_dir = base_dir
         self.train_images, \
         self.train_same_person_pairs, \
         self.train_diff_person_pairs = self.init(train_filename)
@@ -48,7 +53,7 @@ class DevDataset(Dataset):
             yield pair
 
     def print_dataset_stats(self):
-        print 'Type: %s' % self.__class__.__name__
+        Dataset.print_dataset_stats(self)
         print 'Training: Images Required: %s' % len(self.train_images)
         print 'Training: Same Pairs: %s' % len(self.train_same_person_pairs)
         print 'Training: Diff Pairs: %s' % len(self.train_diff_person_pairs)
@@ -82,7 +87,8 @@ class DevDataset(Dataset):
         return images_required, same_person_pairs, diff_person_pairs
 
 class RestrictedDataset(DevDataset):
-    def __init__(self, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+        self.base_dir = base_dir
         self.split = split
         self.train_images, \
         self.train_same_person_pairs, \
@@ -92,9 +98,8 @@ class RestrictedDataset(DevDataset):
         self.test_diff_person_pairs = self.init(filename, split)
 
     def print_dataset_stats(self):
-        print 'Type: %s' % self.__class__.__name__
+        Dataset.print_dataset_stats(self)
         print 'Split: %s' % self.split
-        DevDataset.print_dataset_stats(self)
 
     def init(self, filename, split):
         '''
@@ -141,7 +146,8 @@ class RestrictedDataset(DevDataset):
             test_images, test_same_pairs, test_diff_pairs
 
 class UnrestrictedDataset(DevDataset):
-    def __init__(self, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+        self.base_dir = base_dir
         self.split = split
         self.train_images, \
         self.train_persons_to_imgs, \
@@ -195,7 +201,7 @@ class UnrestrictedDataset(DevDataset):
             yield self.__get_diff_person_sample(self.train_persons_to_imgs)
 
     def print_dataset_stats(self):
-        print 'Type: %s' % self.__class__.__name__
+        Dataset.print_dataset_stats(self)
         print 'Split: %s' % self.split
         train_persons = float(len(self.train_persons_to_imgs))
         train_imgs = float(len(self.train_images))

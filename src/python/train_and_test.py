@@ -8,11 +8,15 @@ import init_W
 
 import dataset_generation
 
-def run(deep_learning=False, debug=False, verbose=False):
-    if debug:
-        dataset = dataset_generation.DevDataset()
+def run(deep_funneled=False, deep_learning=False, debug=False, verbose=False):
+    if deep_funneled:
+        data_dir = constants.FV_DF_DIR
     else:
-        dataset = dataset_generation.UnrestrictedDataset(split=1)
+        data_dir = constants.FV_DIR
+    if debug:
+        dataset = dataset_generation.DevDataset(base_dir=data_dir)
+    else:
+        dataset = dataset_generation.UnrestrictedDataset(base_dir=data_dir, split=1)
 
     W, b, fvs, images_to_indices, da = train(dataset, deep_learning, debug, verbose)
     test(dataset, W, b, 'Train', da=da, fvs=fvs, images_to_indices=images_to_indices, verbose=verbose)
@@ -82,7 +86,6 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
 def train(dataset, deep_learning=False, debug=False, verbose=True):
 
     if verbose:
-        print 'Fisher Vector Directory: %s' % constants.FV_DIR
         print 'Deep-Learning Mode: %s' % deep_learning
         print 'Debug Mode: %s' % debug
         dataset.print_dataset_stats()
@@ -105,7 +108,8 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', action='store_true', help="Debug mode.")
+    parser.add_argument('-df', action='store_true', help="Deep-Funneled LFW dataset.")
     parser.add_argument('-dl', action='store_true', help="Deep Learning mode.")
     parser.add_argument('-v', action='store_true', help="Verbose mode.")
     args = vars(parser.parse_args())
-    run(args['dl'], args['d'], args['v'])
+    run(args['df'], args['dl'], args['d'], args['v'])
