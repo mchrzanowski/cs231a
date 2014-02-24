@@ -7,8 +7,8 @@ import utilities
 from numpy.linalg import norm
 from numpy import dot, outer
 
-def ssgd(W, dataset, fvs=None, image_to_index=None,
-    w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False):
+def ssgd(W, dataset, fvs, image_to_index,
+    w_eta=0.5, b_eta=10, iterations=100000, cache=True, verbose=False):
     b = 0
     if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
     for i in xrange(iterations):
@@ -21,21 +21,17 @@ def ssgd(W, dataset, fvs=None, image_to_index=None,
             y = -1
 
         img1, img2 = sample
-
-        if fvs is None or image_to_index is None:
-            fv1 = utilities.hydrate_fv_from_file(os.path.join(constants.FV_DIR, img1))
-            fv2 = utilities.hydrate_fv_from_file(os.path.join(constants.FV_DIR, img2))
-        else:
-            fv1 = fvs[:, image_to_index[img1]]
-            fv2 = fvs[:, image_to_index[img2]]
+        
+        fv1 = fvs[:, image_to_index[img1]]
+        fv2 = fvs[:, image_to_index[img2]]
 
         fv_diff = fv1 - fv2
-        first_op = dot(W, fv_diff)
-        dist = norm(first_op, 2) ** 2
+        compressed_fv = dot(W, fv_diff)
+        dist = norm(compressed_fv, 2) ** 2
 
         # update W & b
         if y * (b - dist) < 1:
-            W -= w_eta * y * outer(first_op, fv_diff)
+            W -= w_eta * y * outer(compressed_fv, fv_diff)
             b += b_eta * y
 
     if verbose: print 'Optimization Complete!'
