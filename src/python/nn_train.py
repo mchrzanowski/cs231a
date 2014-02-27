@@ -92,10 +92,10 @@ def get_diff_of_fvs(fv_dict,iterations_between_reports,count):
             fv2=fv2_temp[j]
             y = (0, 1)
 
-        if (len(numpy.atleast_2d(fv1))!=len(numpy.atleast_2d(fv2))):
+        if (numpy.atleast_2d(fv1).shape!=numpy.atleast_2d(fv2).shape):
             print "errorrr!!!"
-            print len(fv1)
-            print len(fv2)
+            print numpy.atleast_2d(fv1).shape
+            print numpy.atleast_2d(fv2).shape
             (fv_diff,y)=get_diff_of_fvs(fv_dict,iterations_between_reports,count)
         else:
             fv_diff = numpy.atleast_2d(numpy.asarray(fv1) - numpy.asarray(fv2))
