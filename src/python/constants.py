@@ -6,7 +6,7 @@ B_FILE = '/opt/cs231a/serialized/b'
 W_MATRIX_FILE = '/opt/cs231a/serialized/W'
 
 FV_DIR = '/opt/cs231a/serialized/fv_lfw_non_whitened/'
-FV_DF_DIR = '/opt/cs231a/serialized/fv_deep_funneled/'
+FV_DF_DIR = '/opt/cs231a/serialized/fv_df_root_non_smoothed/'
 LFW_DIR = '/opt/cs231a/data/lfw/'
 
 DEV_TRAIN_PAIR_FILE = '/opt/cs231a/data/pairsDevTrain.txt'

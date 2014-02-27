@@ -76,12 +76,14 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
 
     total = tp + fp + fn + tn
     print 'Total: %s' % total
-    print 'Precision: %s' % (tp / (tp + fp))
-    print 'Recall: %s' % (tp / (tp + fn))
+    print 'Precision: %s' % (tp / (1e-9 + tp + fp))
+    print 'Recall: %s' % (tp / (1e-9 + tp + fn))
     print 'TP: %s' % tp
     print 'FP: %s' % fp
     print 'FN: %s' % fn
     print 'TN: %s' % tn
+
+    return tp, fp, fn, tn
 
 def train(dataset, deep_learning=False, debug=False, verbose=True):
 

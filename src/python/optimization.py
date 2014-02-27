@@ -8,8 +8,14 @@ from numpy.linalg import norm
 from numpy import dot, outer
 
 def ssgd(W, dataset, fvs, image_to_index,
-    w_eta=0.5, b_eta=10, iterations=100000, cache=True, verbose=False):
-    b = 0
+    w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False, b=None):
+    
+    if b is None:
+        update_b = True
+        b = 0
+    else:
+        update_b = False
+
     if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
     for i in xrange(iterations):
         if verbose and i % 100000 == 0: print 'Iteration: %s' % i
@@ -32,11 +38,11 @@ def ssgd(W, dataset, fvs, image_to_index,
         # update W & b
         if y * (b - dist) < 1:
             W -= w_eta * y * outer(compressed_fv, fv_diff)
-            b += b_eta * y
+            if update_b: 
+                b += b_eta * y
 
     if verbose: print 'Optimization Complete!'
     if cache: cPickle.dump(W, open(constants.W_MATRIX_FILE, 'wb'))
     if verbose: print 'Learned b: %s' % b
     if cache: cPickle.dump(b, open(constants.B_FILE, 'wb'))
-
     return W, b
