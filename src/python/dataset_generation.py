@@ -146,7 +146,7 @@ class RestrictedDataset(DevDataset):
             test_images, test_same_pairs, test_diff_pairs
 
 class UnrestrictedDataset(DevDataset):
-    def __init__(self, base_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, filename=constants.PEOPLE_FILE, split=random.randint(1, 10)):
         self.base_dir = base_dir
         self.split = split
         self.train_images, \
@@ -227,41 +227,29 @@ class UnrestrictedDataset(DevDataset):
         test_person_to_imgs = dict()
         train_images = set()
         test_images = set()
+        current_split = 0
         with open(filename, 'rb') as f:
-            pairs_per_split = 600
-            start_test_index = (split - 1) * pairs_per_split
-            end_test_index = split * pairs_per_split
+            
             for i, line in enumerate(f):
                 
-                if i >= start_test_index and i < end_test_index:    # test
-                    person_to_img = test_person_to_imgs
-                    imgs = test_images
-                else:   # train.
-                    person_to_img = train_person_to_imgs
-                    imgs = train_images
-
                 data = line.strip().split('\t')
-                if len(data) == 3:      # same person
-                    person, img1, img2 = data
-                    img1 = self.convert_to_filename(person, img1)
-                    img2 = self.convert_to_filename(person, img2)
-                    person1 = person
-                    person2 = person
-                else:                   # different people
-                    person1, img1, person2, img2 = data
-                    img1 = self.convert_to_filename(person1, img1)
-                    img2 = self.convert_to_filename(person2, img2)
+                if len(data) == 1:              # new split 
+                    current_split += 1
+                else:                           # people data.
+                    if current_split == split:    # test set.
+                        person_to_img = test_person_to_imgs
+                        imgs = test_images
+                    else:   # train.
+                        person_to_img = train_person_to_imgs
+                        imgs = train_images
 
-                if os.path.exists(self.get_fv_file_for_image(img1)):
-                    if person1 not in person_to_img: 
-                        person_to_img[person1] = list()
-                    person_to_img[person1].append(img1)
-                    imgs.add(img1)
+                    person, num = data
+                    if person not in person_to_img:
+                        person_to_img[person] = list()
+
+                    for i in xrange(1, int(num) + 1):
+                        img = self.convert_to_filename(person, i)
+                        imgs.add(img)
+                        person_to_img[person].append(img)
                 
-                if os.path.exists(self.get_fv_file_for_image(img2)):
-                    if person2 not in person_to_img: 
-                        person_to_img[person2] = list()
-                    person_to_img[person2].append(img2)
-                    imgs.add(img2)
-
         return train_images, train_person_to_imgs, test_images, test_person_to_imgs

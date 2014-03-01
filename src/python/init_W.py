@@ -57,7 +57,8 @@ def __deep_learning(fvs, verbose):
 
 def __perform_PCA(fvs, verbose=False):
     if verbose: print 'Start on PCA...'
-    pca = PCA(n_components=15, whiten=True)
+    pca = PCA(n_components=128, whiten=True)
+    if verbose: print 'PCA fields: %s' % pca
     W = pca.fit_transform(fvs).T
     if verbose: print 'PCA complete.'
     return W

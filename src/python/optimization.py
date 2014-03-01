@@ -36,7 +36,7 @@ def ssgd(W, dataset, fvs, image_to_index,
         dist = norm(compressed_fv, 2) ** 2
 
         # update W & b
-        if y * (b - dist) < 1:
+        if y * (b - dist) <= 1:
             W -= w_eta * y * outer(compressed_fv, fv_diff)
             if update_b: 
                 b += b_eta * y
