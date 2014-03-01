@@ -1,14 +1,13 @@
 import constants
+import dataset_generation
+import init_W
 import numpy
 import optimization
 import os
 import pickle
 import utilities
-import init_W
 
-import dataset_generation
-
-def run(deep_funneled=False, deep_learning=False, debug=False, verbose=False):
+def run(b=None, deep_funneled=False, deep_learning=False, debug=False, verbose=False):
     if deep_funneled:
         data_dir = constants.FV_DF_DIR
     else:
@@ -18,7 +17,7 @@ def run(deep_funneled=False, deep_learning=False, debug=False, verbose=False):
     else:
         dataset = dataset_generation.UnrestrictedDataset(base_dir=data_dir, split=1)
 
-    W, b, fvs, images_to_indices, da = train(dataset, deep_learning, debug, verbose)
+    W, b, fvs, images_to_indices, da = train(dataset, b, deep_learning, debug, verbose)
     test(dataset, W, b, 'Train', da=da, fvs=fvs, images_to_indices=images_to_indices, verbose=verbose)
     test(dataset, W, b, 'Test', da=da, verbose=verbose)
 
@@ -65,11 +64,11 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
                     fv2 = da.get_hidden_values(fv2).eval()
 
             dist = get_distance(W, b, label, fv1, fv2)
-            if dist > 1 and label == +1:
+            if dist >= 0 and label == +1:
                 tp += 1
-            elif dist < 1 and label == +1:
+            elif dist < 0 and label == +1:
                 fp += 1
-            elif dist > 1 and label == -1:
+            elif dist >= 0 and label == -1:
                 tn += 1
             else:
                 fn += 1
@@ -85,9 +84,10 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
 
     return tp, fp, fn, tn
 
-def train(dataset, deep_learning=False, debug=False, verbose=True):
+def train(dataset, b=None, deep_learning=False, debug=False, verbose=True):
 
     if verbose:
+        if b is not None: print 'b: %s' % b
         print 'Deep-Learning Mode: %s' % deep_learning
         print 'Debug Mode: %s' % debug
         dataset.print_dataset_stats()
@@ -97,21 +97,23 @@ def train(dataset, deep_learning=False, debug=False, verbose=True):
     else:
         W, fvs, images_to_indices = init_W.init(dataset, debug, verbose)
         da = None
+
     if debug:
         W, b = optimization.ssgd(W, dataset, fvs=fvs, iterations=0, cache=False,
-            image_to_index=images_to_indices, verbose=verbose)
+            image_to_index=images_to_indices, verbose=verbose, b=b)
     else:
         W, b = optimization.ssgd(W, dataset, fvs=fvs,
-            image_to_index=images_to_indices, verbose=verbose)
+            image_to_index=images_to_indices, verbose=verbose, b=b)
     
     return W, b, fvs, images_to_indices, da
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
+    parser.add_argument('-b', default=None, type=int, help="Use a specific b.")
     parser.add_argument('-d', action='store_true', help="Debug mode.")
     parser.add_argument('-df', action='store_true', help="Deep-Funneled LFW dataset.")
     parser.add_argument('-dl', action='store_true', help="Deep Learning mode.")
     parser.add_argument('-v', action='store_true', help="Verbose mode.")
     args = vars(parser.parse_args())
-    run(args['df'], args['dl'], args['d'], args['v'])
+    run(args['b'], args['df'], args['dl'], args['d'], args['v'])

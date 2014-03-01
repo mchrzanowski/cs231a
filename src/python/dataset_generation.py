@@ -245,20 +245,23 @@ class UnrestrictedDataset(DevDataset):
                     person, img1, img2 = data
                     img1 = self.convert_to_filename(person, img1)
                     img2 = self.convert_to_filename(person, img2)
-                    if person not in person_to_img: person_to_img[person] = list()
-                    person_to_img[person].append(img1)
-                    person_to_img[person].append(img2)
+                    person1 = person
+                    person2 = person
                 else:                   # different people
                     person1, img1, person2, img2 = data
                     img1 = self.convert_to_filename(person1, img1)
                     img2 = self.convert_to_filename(person2, img2)
-                    
-                    if person1 not in person_to_img: person_to_img[person1] = list()
-                    person_to_img[person1].append(img1)
 
-                    if person2 not in person_to_img: person_to_img[person2] = list()
+                if os.path.exists(self.get_fv_file_for_image(img1)):
+                    if person1 not in person_to_img: 
+                        person_to_img[person1] = list()
+                    person_to_img[person1].append(img1)
+                    imgs.add(img1)
+                
+                if os.path.exists(self.get_fv_file_for_image(img2)):
+                    if person2 not in person_to_img: 
+                        person_to_img[person2] = list()
                     person_to_img[person2].append(img2)
-                imgs.add(img1)
-                imgs.add(img2)
+                    imgs.add(img2)
 
         return train_images, train_person_to_imgs, test_images, test_person_to_imgs

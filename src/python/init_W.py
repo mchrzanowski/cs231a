@@ -30,6 +30,7 @@ def init(dataset, debug=False, verbose=False):
     if verbose: print 'Initializing W. Heuristic: PCA'
     fvs, images_to_index = create_FV_matrix(dataset, debug)
     W = __perform_PCA(fvs, verbose)
+    if verbose: print 'W shape: ', W.shape
     return W, fvs, images_to_index
 
 def init_deepnet(dataset, debug=False, verbose=False):
@@ -37,6 +38,7 @@ def init_deepnet(dataset, debug=False, verbose=False):
     fvs, images_to_index = create_FV_matrix(dataset, debug)
     da, fvs = __deep_learning(fvs, verbose)
     W = __perform_PCA(fvs, verbose)
+    if verbose: print 'W shape: ', W.shape
     return W, da, fvs, images_to_index
 
 def __deep_learning(fvs, verbose):
@@ -55,7 +57,7 @@ def __deep_learning(fvs, verbose):
 
 def __perform_PCA(fvs, verbose=False):
     if verbose: print 'Start on PCA...'
-    pca = PCA(n_components=128, whiten=True)
+    pca = PCA(n_components=15, whiten=True)
     W = pca.fit_transform(fvs).T
     if verbose: print 'PCA complete.'
     return W

@@ -29,9 +29,13 @@ def run(deep_funneled, debug=False, verbose=False):
     else:
         dataset = dataset_generation.UnrestrictedDataset(base_dir=data_dir, split=1)
 
+    if verbose:
+        print 'Debug Mode: %s' % debug
+        dataset.print_dataset_stats()
+
     Winit, fvs, images_to_indices = init_W.init(dataset, debug, verbose)
     pool = multiprocessing.Pool()
-    bs = [40, 80, 160, 320, 640, 1280, 2560, 5120]
+    bs = [-100, 0, 50, 100, 200, 400, 800, 1600, 3200, 5400]
     best_accuracy = 0.
     best_b = None
     rets = []

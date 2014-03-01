@@ -17,8 +17,8 @@ def ssgd(W, dataset, fvs, image_to_index,
         update_b = False
 
     if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
-    for i in xrange(iterations):
-        if verbose and i % 100000 == 0: print 'Iteration: %s' % i
+    for i in xrange(1, iterations + 1):
+        if verbose and i % 500000 == 0: print 'Iteration: %s' % i
         if random.random() > 0.5:
             sample = dataset.get_same_person_train_sample()
             y = +1
