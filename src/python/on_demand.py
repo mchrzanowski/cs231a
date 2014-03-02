@@ -7,7 +7,7 @@ def _generate_fv(url):
     with open('/tmp/img', 'wb') as f:
         f.write(raw_data)
 
-    cmd = "cd ../matlab; matlab -nosplash -nodesktop -nojvm -r \"remote_create_fv(\'/tmp/img\', \'/tmp/fv\')\"";
+    cmd = "cd ../matlab; matlab -nosplash -nodesktop -nojvm -r \"remote_create_fv(\'/tmp/img\', \'/tmp/fv\')\" > /dev/null";
     os.system(cmd)
     fv = utilities.hydrate_fv_from_file('/tmp/fv')
     return fv
