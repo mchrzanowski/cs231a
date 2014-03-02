@@ -184,19 +184,19 @@ class UnrestrictedDataset(DevDataset):
     def get_diff_person_train_sample(self):
         return self.__get_diff_person_sample(self.train_persons_to_imgs)
 
-    def gen_same_person_test_samples(self, number=3000):
+    def gen_same_person_test_samples(self, number=300):
         for _ in xrange(number):
             yield self.__get_same_person_sample(self.test_persons_to_imgs)
 
-    def gen_same_person_train_samples(self, number=3000):
+    def gen_same_person_train_samples(self, number=300):
         for _ in xrange(number):
             yield self.__get_same_person_sample(self.train_persons_to_imgs)
 
-    def gen_diff_person_test_samples(self, number=3000):
+    def gen_diff_person_test_samples(self, number=300):
         for _ in xrange(number):
             yield self.__get_diff_person_sample(self.test_persons_to_imgs)
 
-    def gen_diff_person_train_samples(self, number=3000):
+    def gen_diff_person_train_samples(self, number=300):
         for _ in xrange(number):
             yield self.__get_diff_person_sample(self.train_persons_to_imgs)
 
@@ -229,20 +229,19 @@ class UnrestrictedDataset(DevDataset):
         test_images = set()
         current_split = 0
         with open(filename, 'rb') as f:
-            
             for i, line in enumerate(f):
                 
                 data = line.strip().split('\t')
-                if len(data) == 1:              # new split 
+                if len(data) == 1:                  # new split 
                     current_split += 1
-                else:                           # people data.
-                    if current_split == split:    # test set.
+                else:                               # people data.
+                    if current_split == split:      # test set.
                         person_to_img = test_person_to_imgs
                         imgs = test_images
-                    else:   # train.
+                    else:                           # train.
                         person_to_img = train_person_to_imgs
                         imgs = train_images
-
+                    
                     person, num = data
                     if person not in person_to_img:
                         person_to_img[person] = list()
@@ -251,5 +250,5 @@ class UnrestrictedDataset(DevDataset):
                         img = self.convert_to_filename(person, i)
                         imgs.add(img)
                         person_to_img[person].append(img)
-                
+
         return train_images, train_person_to_imgs, test_images, test_person_to_imgs

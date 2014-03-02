@@ -16,6 +16,8 @@ def ssgd(W, dataset, fvs, image_to_index,
     else:
         update_b = False
 
+    samples = set()
+
     if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
     for i in xrange(1, iterations + 1):
         if verbose and i % 500000 == 0: print 'Iteration: %s' % i
@@ -27,6 +29,7 @@ def ssgd(W, dataset, fvs, image_to_index,
             y = -1
 
         img1, img2 = sample
+        samples.add(sample)
         
         fv1 = fvs[:, image_to_index[img1]]
         fv2 = fvs[:, image_to_index[img2]]
@@ -45,4 +48,7 @@ def ssgd(W, dataset, fvs, image_to_index,
     if cache: cPickle.dump(W, open(constants.W_MATRIX_FILE, 'wb'))
     if verbose: print 'Learned b: %s' % b
     if cache: cPickle.dump(b, open(constants.B_FILE, 'wb'))
+
+    print 'Samples: %s' % len(samples)
+
     return W, b
