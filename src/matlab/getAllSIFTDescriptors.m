@@ -2,13 +2,14 @@ function getAllSIFTDescriptors(input_dir, output_dir)
     mkdir(output_dir);
 
     X = [];
+    Y = [];
 
     subfolders = dir(strcat(input_dir, '*'));
     for subfolder = subfolders'
         if subfolder.name(1) == '.'
             continue;
         end
-        disp(sprintf('Generating fvs for: %s', subfolder.name));
+        disp(sprintf('Generating SIFT descriptors for: %s', subfolder.name));
         f_q_subfolder = strcat(input_dir, subfolder.name, '/');
         images = dir(strcat(f_q_subfolder, '*.jpg'));
         for image = images'
@@ -28,12 +29,15 @@ function getAllSIFTDescriptors(input_dir, output_dir)
             dlmwrite(f_q_output_path_desc, descriptors);
             dlmwrite(f_q_output_path_keypt, keypts);
             X = [X descriptors];
+            Y = [Y keypts];
         end
     end
 
     U_output = strcat(output_dir, '/U_matrix');
     [X U] = performPCA(X);
     dlmwrite(U_output, U);
+
+    X = [X; Y];
     [means, cov_diags, priors] = vl_gmm(X, 512);
 
     mean_output = strcat(output_dir, '/means');
