@@ -4,11 +4,10 @@ import os
 import random
 import utilities
 
-from numpy.linalg import norm
 from numpy import dot, outer
 
 def ssgd(W, dataset, fvs, image_to_index,
-    w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False, b=None):
+    w_eta=1, b_eta=10, iterations=1000000, cache=True, verbose=False, b=None):
     
     if b is None:
         update_b = True
@@ -17,10 +16,10 @@ def ssgd(W, dataset, fvs, image_to_index,
         update_b = False
 
     samples = set()
-
+    updates = 0
     if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
-    for i in xrange(1, iterations + 1):
-        if verbose and i % 500000 == 0: print 'Iteration: %s' % i
+    while updates < iterations:
+        if verbose and updates % 500000 == 0: print 'Iteration: %s' % updates
         if random.random() > 0.5:
             sample = dataset.get_same_person_train_sample()
             y = +1
@@ -36,12 +35,13 @@ def ssgd(W, dataset, fvs, image_to_index,
 
         fv_diff = fv1 - fv2
         compressed_fv = dot(W, fv_diff)
-        dist = norm(compressed_fv, 2) ** 2
+        dist = dot(compressed_fv.T, compressed_fv)
 
         # update W & b
         if y * (b - dist) <= 1:
+            updates += 1
             W -= w_eta * y * outer(compressed_fv, fv_diff)
-            if update_b: 
+            if update_b:
                 b += b_eta * y
 
     if verbose: print 'Optimization Complete!'

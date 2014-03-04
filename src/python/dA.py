@@ -244,11 +244,10 @@ def train(dataset, hidden_units, learning_rate=0.01, training_epochs=15,
 
     da = dA(input=x, n_visible=visible_units, n_hidden=hidden_units)
 
-    cost, updates = da.get_cost_updates(corruption_level=corruption_level,
-                                        learning_rate=learning_rate)
+    cost, updates = da.get_cost_updates(corruption_level=corruption_level, learning_rate=learning_rate)
 
     train_da = theano.function([index], cost, updates=updates,
-         givens={x: dataset[index * batch_size: (index + 1) * batch_size]})
+        givens={x: dataset[index * batch_size: (index + 1) * batch_size]})
 
     if verbose:
         start_time = epoch_time = time.clock()
@@ -258,7 +257,8 @@ def train(dataset, hidden_units, learning_rate=0.01, training_epochs=15,
             c.append(train_da(batch_index))
         if verbose:
             epoch_end = time.clock()
-            print 'Epoch: {0:3d} Cost: {1:4.2f} Runtime: {2:3.2f} secs.'.format(epoch, numpy.mean(c), (epoch_end - epoch_time))
+            print 'Epoch: {0:3d} Cost: {1:4.2f} Runtime: {2:3.2f} secs.'.format(epoch,
+                numpy.mean(c), (epoch_end - epoch_time))
             epoch_time = epoch_end
 
     if verbose: print 'Total Runtime: %s' % (time.clock() - start_time)

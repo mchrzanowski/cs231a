@@ -8,7 +8,8 @@ function fv = generateFisherVector(img_file)
     img = imresize(img, [img_height, img_width]);   % (numrows, numcols)
 
     [keypts descriptors] = generateDenseSIFTDescriptors(img);
-        
+    descriptors = convertToRootSIFT(descriptors);
+    
     % add spatial information.
     keypts = keypts(1:2, :);    % x & y coords.
     keypts = keypts ./ repmat([img_width; img_height], 1, size(descriptors, 2));

@@ -37,14 +37,16 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
         same_data = dataset.gen_same_person_test_samples
         diff_data = dataset.gen_diff_person_test_samples
 
-    def get_distance(W, b, y, fv1, fv2):
+    def get_distance(W, b, fv1, fv2):
         result = numpy.dot(W, fv1 - fv2)
         dist = numpy.linalg.norm(result, 2) ** 2
-        return y * (b - dist)
+        return b - dist
 
     labels_and_data = ((+1, same_data), (-1, diff_data))
 
     for (label, data) in labels_and_data:
+        print label
+        c = []
         for (img1, img2) in data():
 
             if images_to_indices is not None and img1 in images_to_indices:
@@ -63,15 +65,19 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
                 if da is not None:
                     fv2 = da.get_hidden_values(fv2).eval()
 
-            dist = get_distance(W, b, label, fv1, fv2)
+            dist = get_distance(W, b, fv1, fv2)
+            c.append(dist)
             if dist >= 0 and label == +1:
                 tp += 1
             elif dist < 0 and label == +1:
                 fp += 1
-            elif dist >= 0 and label == -1:
+            elif dist <= 0 and label == -1:
                 tn += 1
             else:
                 fn += 1
+        print 'Mean: %s' % numpy.mean(c)
+        print 'Median: %s' % numpy.median(c)
+        print 'StDev: %s' % numpy.std(c)
 
     total = tp + fp + fn + tn
     print 'Total: %s' % total

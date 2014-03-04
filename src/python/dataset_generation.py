@@ -149,17 +149,16 @@ class UnrestrictedDataset(DevDataset):
     def __init__(self, base_dir, filename=constants.PEOPLE_FILE, split=random.randint(1, 10)):
         self.base_dir = base_dir
         self.split = split
-        self.train_images, \
-        self.train_persons_to_imgs, \
-        self.test_images, \
-        self.test_persons_to_imgs = self.init(filename, split)
+        self.train_images, self.train_persons_to_imgs = self.create_train_data(constants.PEOPLE_FILE, split)
+        self.test_images, self.test_same_pairs, self.test_diff_pairs = self.create_test_data(constants.PAIR_FILE, split)
 
     def get_train_images(self):
         return self.train_images
 
     def __get_same_person_sample(self, mapping):
+        keys = mapping.keys()
         while True:
-            person = random.choice(mapping.keys())
+            person = random.choice(keys)
             if len(mapping[person]) > 1:
                 break
         # sample w/o replacement. 
@@ -184,17 +183,17 @@ class UnrestrictedDataset(DevDataset):
     def get_diff_person_train_sample(self):
         return self.__get_diff_person_sample(self.train_persons_to_imgs)
 
-    def gen_same_person_test_samples(self, number=300):
-        for _ in xrange(number):
-            yield self.__get_same_person_sample(self.test_persons_to_imgs)
+    def gen_same_person_test_samples(self):
+        for pair in self.test_same_pairs:
+            yield pair
 
     def gen_same_person_train_samples(self, number=300):
         for _ in xrange(number):
             yield self.__get_same_person_sample(self.train_persons_to_imgs)
 
-    def gen_diff_person_test_samples(self, number=300):
-        for _ in xrange(number):
-            yield self.__get_diff_person_sample(self.test_persons_to_imgs)
+    def gen_diff_person_test_samples(self):
+        for pair in self.test_diff_pairs:
+            yield pair
 
     def gen_diff_person_train_samples(self, number=300):
         for _ in xrange(number):
@@ -208,11 +207,9 @@ class UnrestrictedDataset(DevDataset):
         print 'Train: Total Persons: %s' % train_persons
         print 'Train: Total Imgs: %s' % train_imgs
         print 'Train: Mean Imgs per Person: %s' % (train_imgs / train_persons)
-        test_persons = float(len(self.test_persons_to_imgs))
-        test_imgs = float(len(self.test_images))
-        print 'Test: Total Persons: %s' % test_persons
-        print 'Test: Total Imgs: %s' % test_imgs
-        print 'Test: Avg Imgs per Person: %s' % (test_imgs / test_persons)
+        print 'Test: Same Pairs: %s' % len(self.test_same_pairs)
+        print 'Test: Diff Pairs: %s' % len(self.test_diff_pairs)
+        print 'Test: Total Imgs: %s' % float(len(self.test_images))
 
     def init(self, filename, split):
         '''
@@ -222,33 +219,53 @@ class UnrestrictedDataset(DevDataset):
         assert split >= 1 and split <= 10
         return self.__create_person_to_img_maps(filename, split)
 
-    def __create_person_to_img_maps(self, filename, split):
+    def create_train_data(self, people_file, split):
         train_person_to_imgs = dict()
-        test_person_to_imgs = dict()
         train_images = set()
-        test_images = set()
         current_split = 0
-        with open(filename, 'rb') as f:
+        with open(people_file, 'rb') as f:
             for i, line in enumerate(f):
-                
                 data = line.strip().split('\t')
                 if len(data) == 1:                  # new split 
                     current_split += 1
                 else:                               # people data.
-                    if current_split == split:      # test set.
-                        person_to_img = test_person_to_imgs
-                        imgs = test_images
-                    else:                           # train.
-                        person_to_img = train_person_to_imgs
-                        imgs = train_images
-                    
+                    if current_split == split:      # test set. ignore!
+                        continue
                     person, num = data
-                    if person not in person_to_img:
-                        person_to_img[person] = list()
-
+                    if person not in train_person_to_imgs:
+                        train_person_to_imgs[person] = list()
                     for i in xrange(1, int(num) + 1):
                         img = self.convert_to_filename(person, i)
-                        imgs.add(img)
-                        person_to_img[person].append(img)
+                        train_images.add(img)
+                        train_person_to_imgs[person].append(img)
 
-        return train_images, train_person_to_imgs, test_images, test_person_to_imgs
+        return train_images, train_person_to_imgs
+
+    def create_test_data(self, pair_file, split):
+        test_images = set()
+        test_same_pairs = list()
+        test_diff_pairs = list()
+        with open(pair_file, 'rb') as f:
+            pairs_per_split = 600
+            start_test_index = (split - 1) * pairs_per_split
+            end_test_index = split * pairs_per_split
+            for i, line in enumerate(f):
+                if i < start_test_index:
+                    continue
+                if i >= end_test_index:
+                    break
+                data = line.strip().split('\t')
+                if len(data) == 3:      # same person
+                    person, img1, img2 = data
+                    img1 = self.convert_to_filename(person, img1)
+                    img2 = self.convert_to_filename(person, img2)
+                    test_same_pairs.append((img1, img2))
+                else:                   # different people
+                    person1, img1, person2, img2 = data
+                    img1 = self.convert_to_filename(person1, img1)
+                    img2 = self.convert_to_filename(person2, img2)
+                    test_diff_pairs.append((img1, img2))
+                test_images.add(img1)
+                test_images.add(img2)
+
+        return test_images, test_same_pairs, test_diff_pairs
