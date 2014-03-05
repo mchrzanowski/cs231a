@@ -32,7 +32,7 @@ function generateAllFisherVectors(input_dir, output_dir)
         data = u' * descriptors;
         data = [data; keypts];
 
-        fv = vl_fisher(data, m, d, p);
+        fv = vl_fisher(data, m, d, p, 'Improved');
         dlmwrite(fv_output_file, fv);
     end
 end
