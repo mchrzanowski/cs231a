@@ -28,8 +28,11 @@ function getAllSIFTDescriptors(input_dir, output_dir)
             [descriptors keypts] = generateSIFTDescriptors(f_q_img_path);
             dlmwrite(f_q_output_path_desc, descriptors);
             dlmwrite(f_q_output_path_keypt, keypts);
-            X = [X descriptors];
-            Y = [Y keypts];
+            
+            indx = randsample(1:length(descriptors), 95);
+
+            X = [X descriptors(:, indx)];
+            Y = [Y keypts(:, indx)];
         end
     end
 

@@ -1,26 +1,38 @@
 function generateAllFisherVectors(input_dir, output_dir)
-    mkdir(output_dir);
+% i assume you've already run getAllSIFTDescriptors !
 
-    subfolders = dir(strcat(input_dir, '*'));
-    for subfolder = subfolders'
-        if subfolder.name(1) == '.'
+    mean_file = strcat(input_dir, '/means');
+    m = dlmread(mean_file);
+
+    cov_file = strcat(input_dir, '/diags');
+    d = dlmread(cov_file);
+
+    prior_file = strcat(input_dir, '/priors');
+    p = dlmread(prior_file);
+
+    u_file = strcat(output_dir, '/U_matrix');
+    u = dlmread(u_file);
+
+    imgs = dir(strcat(input_dir, '*_descriptor.csv'));
+    for img = imgs'
+        if img.name(1) == '.'
             continue;
         end
-        disp(sprintf('Generating fvs for: %s', subfolder.name));
-        f_q_subfolder = strcat(input_dir, subfolder.name, '/');
-        images = dir(strcat(f_q_subfolder, '*.jpg'));
-        for image = images'
-            if image.name(1) == '.'
-                continue;
-            end
-            f_q_img_path = strcat(f_q_subfolder, image.name);
-            f_q_output_path = strcat(output_dir, image.name);
-            f_q_output_path = strrep(f_q_output_path, '.jpg', '.csv');
-            if exist(f_q_output_path, 'file') ~= 0
-                continue;
-            end
-            fv = generateFisherVector(f_q_img_path);
-            dlmwrite(f_q_output_path, fv);
+
+        fv_output_file = strcat(output_dir, strrep(img, '_descriptor', '_fv'));
+        if exist(fv_output_file, 'file') ~= 0
+            continue;
         end
+        
+        disp(sprintf('Generating fv for: %s', img.name));
+        descriptors = dlmread(img);
+        keypt_file = strcat(input_dir, strrep(img, '_descriptor', '_keypts'));
+        keypts = dlmread(keypt_file);
+
+        data = u' * descriptors;
+        data = [data; keypts];
+
+        fv = vl_fisher(data, m, d, p);
+        dlmwrite(fv_output_file, fv);
     end
 end
