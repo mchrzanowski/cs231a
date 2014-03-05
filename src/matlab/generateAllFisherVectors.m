@@ -15,18 +15,19 @@ function generateAllFisherVectors(input_dir, output_dir)
 
     imgs = dir(strcat(input_dir, '*_descriptor.csv'));
     for img = imgs'
+        
         if img.name(1) == '.'
             continue;
         end
 
-        fv_output_file = strcat(output_dir, strrep(img, '_descriptor', '_fv'));
+        fv_output_file = strcat(output_dir, strrep(img.name, '_descriptor', '_fv'));
         if exist(fv_output_file, 'file') ~= 0
             continue;
         end
         
         disp(sprintf('Generating fv for: %s', img.name));
-        descriptors = dlmread(img);
-        keypt_file = strcat(input_dir, strrep(img, '_descriptor', '_keypts'));
+        descriptors = dlmread(strcat(input_dir, img.name));
+        keypt_file = strcat(input_dir, strrep(img.name, '_descriptor', '_keypts'));
         keypts = dlmread(keypt_file);
 
         data = u' * descriptors;
