@@ -7,7 +7,7 @@ import utilities
 from numpy import dot, outer
 
 def ssgd(W, dataset, fvs, image_to_index,
-    w_eta=1, b_eta=10, iterations=1000000, cache=True, verbose=False, b=None):
+    w_eta=0.5, b_eta=10, iterations=1000000, cache=True, verbose=False, b=None):
     
     if b is None:
         update_b = True
@@ -15,11 +15,9 @@ def ssgd(W, dataset, fvs, image_to_index,
     else:
         update_b = False
 
-    samples = set()
-    updates = 0
     if verbose: print 'Begin Stochastic Subgradient Descent Learning...'
-    while updates < iterations:
-        if verbose and updates % 500000 == 0: print 'Iteration: %s' % updates
+    for i in xrange(1, iterations + 1):
+        if verbose and i % 500000 == 0: print 'Iteration: %s' % i
         if random.random() > 0.5:
             sample = dataset.get_same_person_train_sample()
             y = +1
@@ -27,9 +25,7 @@ def ssgd(W, dataset, fvs, image_to_index,
             sample = dataset.get_diff_person_train_sample()
             y = -1
 
-        img1, img2 = sample
-        samples.add(sample)
-        
+        img1, img2 = sample        
         fv1 = fvs[:, image_to_index[img1]]
         fv2 = fvs[:, image_to_index[img2]]
 
@@ -39,7 +35,6 @@ def ssgd(W, dataset, fvs, image_to_index,
 
         # update W & b
         if y * (b - dist) <= 1:
-            updates += 1
             W -= w_eta * y * outer(compressed_fv, fv_diff)
             if update_b:
                 b += b_eta * y
@@ -48,7 +43,5 @@ def ssgd(W, dataset, fvs, image_to_index,
     if cache: cPickle.dump(W, open(constants.W_MATRIX_FILE, 'wb'))
     if verbose: print 'Learned b: %s' % b
     if cache: cPickle.dump(b, open(constants.B_FILE, 'wb'))
-
-    print 'Samples: %s' % len(samples)
 
     return W, b

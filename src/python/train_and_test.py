@@ -39,14 +39,12 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
 
     def get_distance(W, b, fv1, fv2):
         result = numpy.dot(W, fv1 - fv2)
-        dist = numpy.linalg.norm(result, 2) ** 2
+        dist = numpy.dot(result.T, result)
         return b - dist
 
     labels_and_data = ((+1, same_data), (-1, diff_data))
 
     for (label, data) in labels_and_data:
-        print label
-        c = []
         for (img1, img2) in data():
 
             if images_to_indices is not None and img1 in images_to_indices:
@@ -75,9 +73,6 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
                 tn += 1
             else:
                 fn += 1
-        print 'Mean: %s' % numpy.mean(c)
-        print 'Median: %s' % numpy.median(c)
-        print 'StDev: %s' % numpy.std(c)
 
     total = tp + fp + fn + tn
     print 'Total: %s' % total
