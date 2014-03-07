@@ -8,14 +8,14 @@ import pickle
 import utilities
 
 def run(b=None, deep_funneled=False, deep_learning=False, debug=False, verbose=False):
-    if deep_funneled:
-        data_dir = constants.FV_DF_DIR
-    else:
-        data_dir = constants.FV_DIR
+    
+    base_dir = utilities.get_dataset(deep_funneled)
+    param_file = utilities.convert_to_param_file(deep_learning, deep_funneled)
+    
     if debug:
-        dataset = dataset_generation.DevDataset(base_dir=data_dir)
+        dataset = dataset_generation.DevDataset(base_dir=base_dir, param_file=param_file)
     else:
-        dataset = dataset_generation.UnrestrictedDataset(base_dir=data_dir, split=1)
+        dataset = dataset_generation.UnrestrictedDataset(base_dir=base_dir, param_file=param_file, split=1)
 
     W, b, fvs, images_to_indices, da = train(dataset, b, deep_learning, debug, verbose)
     test(dataset, W, b, 'Train', da=da, fvs=fvs, images_to_indices=images_to_indices, verbose=verbose)
@@ -64,7 +64,6 @@ def test(dataset, W, b, type, da=None, fvs=None, images_to_indices=None, verbose
                     fv2 = da.get_hidden_values(fv2).eval()
 
             dist = get_distance(W, b, fv1, fv2)
-            c.append(dist)
             if dist >= 0 and label == +1:
                 tp += 1
             elif dist < 0 and label == +1:

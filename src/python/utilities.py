@@ -4,6 +4,20 @@ import os
 import shutil
 import distutils.dir_util
 
+def get_dataset(use_deep_funneled):
+    if use_deep_funneled:
+        return constants.FV_DF_DIR
+    return constants.FV_DIR
+
+def convert_to_param_file(deep_learning, deep_funneled):
+    if deep_funneled and deep_learning:
+        return constants.W_B_DF_DL_FILE
+    if deep_funneled and not deep_learning:
+        return constants.W_B_DF_FILE
+    if not deep_funneled and deep_learning:
+        return constants.W_B_DL_FILE
+    return constants.W_B_FILE
+
 def hydrate_fv_from_file(input_file):
     return numpy.genfromtxt(input_file, dtype=numpy.float32, delimiter=',')
 

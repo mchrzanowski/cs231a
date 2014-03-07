@@ -1,12 +1,11 @@
+W_B_DF_FILE = '/opt/cs231a/serialized/b_w_df'
+W_B_DF_DL_FILE = '/opt/cs231a/serialized/b_w_df_dl'
+W_B_DL_FILE = '/opt/cs231a/serialized/b_w_dl'
+W_B_FILE = '/opt/cs231a/serialized/b_w'
 
-RESIZED_IMAGE_HEIGHT = 160
-RESIZED_IMAGE_WIDTH = 125
+FV_DIR = '/opt/cs231a/data/lfw_fvs/'
+FV_DF_DIR = '/opt/cs231a/data/lfw_df_fvs/'
 
-B_FILE = '/opt/cs231a/serialized/b'
-W_MATRIX_FILE = '/opt/cs231a/serialized/W'
-
-FV_DIR = '/opt/cs231a/serialized/fv_lfw_non_whitened/'
-FV_DF_DIR = '/mnt/storage/cs231a/serialized/lfw_df_fvs/'
 LFW_DIR = '/opt/cs231a/data/lfw/'
 
 DEV_TRAIN_PAIR_FILE = '/opt/cs231a/data/pairsDevTrain.txt'
