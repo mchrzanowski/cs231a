@@ -15,7 +15,7 @@ function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
         f_q_person = strcat(data_dir, person.name, '/');
         images = dir(strcat(f_q_person, '*.jpg'));
         %waitbar((current_person/length(people)),h);
-        if(mod(current_person,200)==0)
+        if(mod(current_person,20)==0)
            (current_person/length(people))
         end
         for image = images'
