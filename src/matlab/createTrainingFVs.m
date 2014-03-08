@@ -1,7 +1,6 @@
 function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
     fvs = [];
     labels = [];
-
     current_person = 0;
     people = dir(strcat(data_dir, '*'));
     for person = people'
@@ -21,7 +20,7 @@ function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
             data = [data; keypts];
             data = double(data);
             fv = vl_fisher(data, M, D, P, 'Improved');
-            fvs = [fv fv];
+            fvs = [fvs fv];
             labels = [labels current_person];
         end
     end
