@@ -34,11 +34,7 @@ function generateAllFisherVectors(input_dir, param_dir, output_dir)
             if exist(f_q_output_path_fv, 'file') ~= 0
                 continue;
             end
-            [descriptors keypts] = generateSIFTDescriptors(f_q_img_path);
-            data = u' * descriptors;
-            data = [data; keypts];
-            data = double(data);
-            fv = vl_fisher(data, m, d, p, 'Improved');
+            fv = generateFisherVector(f_q_img_path, u, m, d, p);
             dlmwrite(f_q_output_path_fv, fv);
         end
     end
