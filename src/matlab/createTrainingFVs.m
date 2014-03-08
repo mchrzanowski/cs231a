@@ -5,7 +5,7 @@ function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
     current_person = 0;
     people = dir(strcat(data_dir, '*'));
     assert(~isempty(people));
-    h = waitbar(0,'Loading People...');
+    %h = waitbar(0,'Loading People...');
     length(people)
     for person = people'
         if person.name(1) == '.'
@@ -14,8 +14,10 @@ function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
         current_person = current_person + 1;
         f_q_person = strcat(data_dir, person.name, '/');
         images = dir(strcat(f_q_person, '*.jpg'));
-        waitbar((current_person/length(people)),h);
-        
+        %waitbar((current_person/length(people)),h);
+        if(mod(current_person,200)==0)
+           (current_person/length(people))
+        end
         for image = images'
             if image.name(1) == '.'
                 continue;
