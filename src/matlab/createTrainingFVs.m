@@ -1,8 +1,12 @@
 function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
     fvs = [];
     labels = [];
+
     current_person = 0;
     people = dir(strcat(data_dir, '*'));
+    assert(~isempty(people));
+    h = waitbar(0,'Loading People...');
+    length(people)
     for person = people'
         if person.name(1) == '.'
             continue;
@@ -10,12 +14,14 @@ function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
         current_person = current_person + 1;
         f_q_person = strcat(data_dir, person.name, '/');
         images = dir(strcat(f_q_person, '*.jpg'));
+        waitbar((current_person/length(people)),h);
+        
         for image = images'
             if image.name(1) == '.'
                 continue;
             end
             f_q_img_path = strcat(f_q_person, image.name);
-            [descriptors keypts] = generateSIFTDescriptors(f_q_img_path);
+            [descriptors, keypts] = generateSIFTDescriptors(f_q_img_path);
             data = U' * descriptors;
             data = [data; keypts];
             data = double(data);
