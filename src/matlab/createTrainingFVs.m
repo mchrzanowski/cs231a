@@ -17,10 +17,10 @@
             end
             f_q_img_path = strcat(f_q_person, image.name);
             [descriptors keypts] = generateSIFTDescriptors(f_q_img_path);
-            data = u' * descriptors;
+            data = U' * descriptors;
             data = [data; keypts];
             data = double(data);
-            fv = vl_fisher(data, m, d, p, 'Improved');
+            fv = vl_fisher(data, M, D, P, 'Improved');
             fvs = [fv fv];
             labels = [labels label];
         end
