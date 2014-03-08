@@ -22,12 +22,8 @@ function getAllSIFTDescriptors(input_dir, output_dir)
             
             f_q_output_path_desc = strrep(f_q_output_path_desc, '.jpg', '_descriptor.csv');
             f_q_output_path_keypt = strrep(f_q_output_path_keypt, '.jpg', '_keypts.csv');
-            %if exist(f_q_output_path_desc, 'file') ~= 0
-            %    continue;
-            %end
+            
             [descriptors keypts] = generateSIFTDescriptors(f_q_img_path);
-            %dlmwrite(f_q_output_path_desc, descriptors);
-            %dlmwrite(f_q_output_path_keypt, keypts);
 
             indx = randsample(1:length(descriptors), 95);
 

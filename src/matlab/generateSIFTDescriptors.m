@@ -8,7 +8,7 @@ function [descriptors keypts] = generateSIFTDescriptors(img_file)
     img = imresize(img, [img_height, img_width]);   % (numrows, numcols)
 
     [keypts descriptors] = generateDenseSIFTDescriptors(img);
-    descriptors = convertToRootSIFT(descriptors);
+    %descriptors = convertToRootSIFT(descriptors);
 
     % add spatial information.
     keypts = keypts(1:2, :);    % x & y coords.
