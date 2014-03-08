@@ -22,7 +22,7 @@
             data = double(data);
             fv = vl_fisher(data, M, D, P, 'Improved');
             fvs = [fv fv];
-            labels = [labels label];
+            labels = [labels current_person];
         end
     end
 end
