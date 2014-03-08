@@ -21,15 +21,7 @@ function [fvs labels] = createTrainingFVs(data_dir, U, M, D, P)
                 continue;
             end
             f_q_img_path = strcat(f_q_person, image.name);
-<<<<<<< HEAD
             fv = generateFisherVector(f_q_img_path, U, M, D, P);
-=======
-            [descriptors, keypts] = generateSIFTDescriptors(f_q_img_path);
-            data = U' * descriptors;
-            data = [data; keypts];
-            data = double(data);
-            fv = vl_fisher(data, M, D, P, 'Improved');
->>>>>>> 8986e8531a89306940cb27e37cfdf12e847a76cb
             fvs = [fvs fv];
             labels = [labels current_person];
         end
