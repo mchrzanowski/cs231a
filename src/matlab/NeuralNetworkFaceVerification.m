@@ -1,9 +1,13 @@
 %Train and test the neural network procedure
 clear all; close all; clc;
+curr_dir = pwd;
+cd('~/vlfeat-0.9.18/toolbox/')
+vl_setup
+cd(curr_dir)
 
 num_iters=10^8;
 
-image_dir = '/Users/francoischaubard/Desktop/lfw-deepfunneled/';
+image_dir = '~/lfw-deepfunneled/';
 U=dlmread('../../params/gmm_params_rooted_df/U_matrix');
 M=dlmread('../../params/gmm_params_rooted_df/means');
 D=dlmread('../../params/gmm_params_rooted_df/diags');

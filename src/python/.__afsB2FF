@@ -235,7 +235,7 @@ if __name__ != "Main":
     max_iterations_train = 100000
     iterations_between_reports = 1000
     train_percent_of_dataset = 0.75
-    layerDims = [67584,9024,1028,2]
+    layerDims = [67584,2024,128,2]
 
     print "training the net"
     net = train_the_nn(max_iterations_train,iterations_between_reports,train_percent_of_dataset,layerDims)
