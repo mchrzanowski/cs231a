@@ -1,6 +1,6 @@
 [fvs labels] = function createTrainingFVs(data_dir, U, M, D, P)
     fvs = [];
-    labels = []
+    labels = [];
 
     current_person = 0;
     people = dir(strcat(input_dir, '*'));
