@@ -4,10 +4,10 @@ clear all; close all; clc;
 num_iters=10^8;
 
 image_dir = '/Users/francoischaubard/Desktop/lfw-deepfunneled/';
-U=dlmread('gmm_params_rooted_df/U_matrix');
-M=dlmread('gmm_params_rooted_df/means');
-D=dlmread('gmm_params_rooted_df/diags');
-P=dlmread('gmm_params_rooted_df/priors');
+U=dlmread('../../params/gmm_params_rooted_df/U_matrix');
+M=dlmread('../../params/gmm_params_rooted_df/means');
+D=dlmread('../../params/gmm_params_rooted_df/diags');
+P=dlmread('../../params/gmm_params_rooted_df/priors');
 
 % generate all the fv's
 [fvs labels] = createTrainingFVs(image_dir, U, M, D, P);
