@@ -35,8 +35,6 @@ nosetests.xml
 .project
 .pydevproject
 
-# folders
-data/
 
 # Mac hidden files
 .DS_Store
