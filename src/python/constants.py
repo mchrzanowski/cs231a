@@ -15,5 +15,3 @@ PAIR_FILE = '/opt/cs231a/data/pairs.txt'
 PEOPLE_FILE = '/opt/cs231a/data/people.txt'
 
 FV_DIM = 67584
-
-PARAM_DIR = '../../params/gmm_params_non_root_df_41k/'
