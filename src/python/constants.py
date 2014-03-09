@@ -3,7 +3,7 @@ W_B_DF_DL_FILE = '/opt/cs231a/serialized/b_w_df_dl'
 W_B_DL_FILE = '/opt/cs231a/serialized/b_w_dl'
 W_B_FILE = '/opt/cs231a/serialized/b_w'
 
-FV_DIR = '/opt/cs231a/data/lfw_fvs/'
+FV_DIR = '/opt/cs231a/data/lfw_fvs_nonroot/'
 FV_DF_DIR = '/opt/cs231a/data/lfw_df_fvs/'
 
 LFW_DIR = '/opt/cs231a/data/lfw/'
@@ -15,3 +15,5 @@ PAIR_FILE = '/opt/cs231a/data/pairs.txt'
 PEOPLE_FILE = '/opt/cs231a/data/people.txt'
 
 FV_DIM = 67584
+
+PARAM_DIR = '../../params/gmm_params_non_root_df_41k/'
