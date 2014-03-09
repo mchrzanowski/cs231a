@@ -4,6 +4,11 @@ import os
 import shutil
 import distutils.dir_util
 
+def get_distance(W, b, fv1, fv2):
+    result = numpy.dot(W, fv1 - fv2)
+    dist = numpy.dot(result.T, result)
+    return b - dist
+
 def get_dataset(use_deep_funneled):
     if use_deep_funneled:
         return constants.FV_DF_DIR
@@ -20,7 +25,6 @@ def convert_to_param_file(deep_learning, deep_funneled):
 
 def hydrate_fv_from_file(input_file):
     return numpy.genfromtxt(input_file, dtype=numpy.float32, delimiter=',')
-
 
 def parse_lfw_data_into_train_and_test(src_dir, train_dir, test_dir, split, people_file=constants.PEOPLE_FILE):
     current_split = 0

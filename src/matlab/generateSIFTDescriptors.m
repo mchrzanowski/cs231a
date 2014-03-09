@@ -6,7 +6,10 @@ function [descriptors keypts] = generateSIFTDescriptors(img_file)
     img = rgb2gray(img);
     img = single(img);
     img = imresize(img, [img_height, img_width]);   % (numrows, numcols)
-
+    
+    img_height = min(img_height, size(img, 1));
+    img_width = min(img_width, size(img, 2));
+    
     [keypts descriptors] = generateDenseSIFTDescriptors(img);
     %descriptors = convertToRootSIFT(descriptors);
 
