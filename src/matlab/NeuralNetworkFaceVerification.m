@@ -2,12 +2,12 @@
 clear all; close all; clc;
 dbstop if error;
 
-%curr_dir = pwd;
-%cd('~/vlfeat-0.9.18/toolbox/')
-%vl_setup
-%cd(curr_dir)
+curr_dir = pwd;
+cd('~/vlfeat-0.9.18/toolbox/')
+vl_setup
+cd(curr_dir)
 
-num_iters=10^8;
+num_iters=10^2;
 
 image_dir = '~/lfw-deepfunneled/';
 U=dlmread('../../params/gmm_params_rooted_df/U_matrix');
@@ -17,6 +17,8 @@ P=dlmread('../../params/gmm_params_rooted_df/priors');
 
 % generate all the fv's
 [fvs labels] = createTrainingFVs(image_dir, U, M, D, P);
+save('fvs_francois.mat','fvs');
+save('labels_francois.mat','labels');
 
 unique_people = unique(labels);
 histogram = histc(labels,1:labels(end));
