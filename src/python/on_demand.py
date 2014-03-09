@@ -33,7 +33,7 @@ def decide(matlab_dir, param_dir, file1, file2):
         fv1, fv2 = _generate_fvs(matlab_dir, param_dir, file1, file2)
         global _W, _b
         if _W is None and _b is None:
-            _b, _W = cPickle.load(open(os.path.join(param_dir, 'b_w'), 'rb'))
+            _b, _W = cPickle.load(open(os.path.join(param_dir, constants.B_W_FILE), 'rb'))
         decision = utilities.get_distance(_W, _b, fv1, fv2) >= 0
     except Exception as e:
         raise e

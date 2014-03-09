@@ -7,7 +7,7 @@ import utilities
 from numpy import dot, outer
 
 def ssgd(W, dataset, fvs, image_to_index,
-    w_eta=0.5, b_eta=10, iterations=1000000, cache=False, verbose=False, b=None):
+    w_eta=0.5, b_eta=10, iterations=1000000, verbose=False, b=None):
     
     if b is None:
         update_b = True
@@ -41,6 +41,7 @@ def ssgd(W, dataset, fvs, image_to_index,
 
     if verbose: print 'Optimization Complete!'
     if verbose: print 'Learned b: %s' % b
-    if cache: cPickle.dump((b, W), open(dataset.param_file, 'wb'))
+    if dataset.param_dir is not None: cPickle.dump((b, W),
+        open(os.path.join(dataset.param_dir, constants.B_W_FILE), 'wb'))
 
     return W, b

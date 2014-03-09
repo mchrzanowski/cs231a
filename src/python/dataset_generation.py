@@ -14,13 +14,13 @@ class Dataset(object):
     def print_dataset_stats(self):
         print 'Dataset Type: %s' % self.__class__.__name__
         print 'LFW Dataset Directory: %s' % self.base_dir
-        print 'Param File: %s' % self.param_file
+        print 'Param Dir: %s' % self.param_dir
 
 class DevDataset(Dataset):
-    def __init__(self, base_dir, param_file, train_filename=constants.DEV_TRAIN_PAIR_FILE,
+    def __init__(self, base_dir, param_dir, train_filename=constants.DEV_TRAIN_PAIR_FILE,
     test_filename=constants.DEV_TEST_PAIR_FILE):
         self.base_dir = base_dir
-        self.param_file = param_file
+        self.param_dir = param_dir
         self.train_images, \
         self.train_same_person_pairs, \
         self.train_diff_person_pairs = self.init(train_filename)
@@ -89,9 +89,9 @@ class DevDataset(Dataset):
         return images_required, same_person_pairs, diff_person_pairs
 
 class RestrictedDataset(DevDataset):
-    def __init__(self, base_dir, param_file, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, param_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
         self.base_dir = base_dir
-        self.param_file = param_file
+        self.param_dir = param_dir
         self.split = split
         self.train_images, \
         self.train_same_person_pairs, \
@@ -149,9 +149,9 @@ class RestrictedDataset(DevDataset):
             test_images, test_same_pairs, test_diff_pairs
 
 class UnrestrictedDataset(DevDataset):
-    def __init__(self, base_dir, param_file, filename=constants.PEOPLE_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, param_dir, filename=constants.PEOPLE_FILE, split=random.randint(1, 10)):
         self.base_dir = base_dir
-        self.param_file = param_file
+        self.param_dir = param_dir
         self.split = split
         self.train_images, self.train_persons_to_imgs = self.create_train_data(constants.PEOPLE_FILE, split)
         self.test_images, self.test_same_pairs, self.test_diff_pairs = self.create_test_data(constants.PAIR_FILE, split)
