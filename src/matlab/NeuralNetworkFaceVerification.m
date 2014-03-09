@@ -1,13 +1,15 @@
 %Train and test the neural network procedure
 clear all; close all; clc;
+matlabpool close force local;
 matlabpool open 12;
-
+c = clock;
+disp(datestr(datenum(c(1),c(2),c(3),c(4),c(5),c(6))));
 curr_dir = pwd;
 cd('~/vlfeat-0.9.18/toolbox/')
 vl_setup
 cd(curr_dir)
 
-num_iters=10^6;
+num_iters=10^7;
 
 image_dir = '~/lfw-deepfunneled/';
 U=dlmread('../../params/gmm_params_rooted_df/U_matrix');
@@ -55,27 +57,30 @@ parfor i=1:num_iters
                    datasample(find(labels==person_idxs(2)),1,'Replace',false)];
         fv1 = fvs(:,choices(1));
         fv2 = fvs(:,choices(2));
-        same=0;
+        same=-1;
     end
     fv_diff=[fv_diff sparse(fv1-fv2)]; 
-    training_labels=[training_labels sparse(same)];
+    training_labels=[training_labels same];
     
 end
-
+c=clock;
+disp(datestr(datenum(c(1),c(2),c(3),c(4),c(5),c(6))));
 display('finished! training svm..')
 %training_labels = sparse(training_labels);
-%model_params = '-c 1 -g 0.07';
-model_params = '-t 0';
+model_params = '-c 1 -g 0.07';
+%model_params = '-t 0';
 
 split_amount = floor(0.75*size(training_labels,2));
-model = svmtrain(training_labels(1:split_amount), fv_diff(:,1:split_amount), model_params);
-
+cd('~/libsvm-3.17/matlab');
+model = svmtrain(training_labels(1:split_amount)', sparse(fv_diff(:,1:split_amount)'), model_params);
+disp(datestr(datenum(c(1),c(2),c(3),c(4),c(5),c(6))));
 display('testing svm..')
-test_fvs(:,(split_amount+1):end);
-testing_labels((split_amount+1):end);
+test_fvs=sparse(fv_diff(:,(split_amount+1):end));
+testing_labels=training_labels((split_amount+1):end);
 %[test_fvs testing_labels] = createTestingFVs(pair_file, data_dir, split, U, M, D, P)
 
-[predicted_label, accuracy, decision_values] = svmpredict(testing_labels, test_fvs, model);
+[predicted_label, accuracy, decision_values] = svmpredict(testing_labels',sparse( test_fvs'), model);
+disp(datestr(datenum(c(1),c(2),c(3),c(4),c(5),c(6))));
 display('finished testing svm..')
 accuracy
-
+cd(curr_dir)
