@@ -3,6 +3,9 @@ import cPickle
 import utilities
 import os
 
+_W = None
+_b = None
+
 def _generate_fvs(matlab_dir, param_dir, file1, file2):
     fv1_file = '/tmp/fv1' 
     fv2_file = '/tmp/fv2'
@@ -28,7 +31,9 @@ def _generate_fvs(matlab_dir, param_dir, file1, file2):
 def decide(matlab_dir, param_dir, file1, file2):
     try:
         fv1, fv2 = _generate_fvs(matlab_dir, param_dir, file1, file2)
-        _b, _W = cPickle.load(open(os.path.join(param_dir, constants.B_W_FILE), 'rb'))
+        global _W, _b
+        if _W is None or _b is None:
+            _b, _W = cPickle.load(open(os.path.join(param_dir, constants.B_W_FILE), 'rb'))
         decision = utilities.get_distance(_W, _b, fv1, fv2) >= 0
     except Exception as e:
         raise e
