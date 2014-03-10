@@ -39,9 +39,11 @@ def ssgd(W, dataset, fvs, image_to_index,
             if update_b:
                 b += b_eta * y
 
-    if verbose: print 'Optimization Complete!'
-    if verbose: print 'Learned b: %s' % b
-    if dataset.param_dir is not None: cPickle.dump((b, W),
-        open(os.path.join(dataset.param_dir, constants.B_W_FILE), 'wb'))
+    if verbose: 
+        print 'Optimization Complete!'
+        print 'Learned b: %s' % b
+    if dataset.param_dir is not None: 
+        cPickle.dump((b, W), open(os.path.join(dataset.param_dir,
+            constants.B_W_FILE), 'wb'))
 
     return W, b

@@ -3,9 +3,6 @@ import cPickle
 import utilities
 import os
 
-_W = None
-_b = None
-
 def _generate_fvs(matlab_dir, param_dir, file1, file2):
     fv1_file = '/tmp/fv1' 
     fv2_file = '/tmp/fv2'
@@ -17,8 +14,8 @@ def _generate_fvs(matlab_dir, param_dir, file1, file2):
     return_value = os.system(cmd)
     if return_value != 0: raise Exception('error from matlab! error code: %d' % return_value)
     
-    fv1 = utilities.hydrate_fv_from_file('/tmp/fv1')
-    fv2 = utilities.hydrate_fv_from_file('/tmp/fv2')
+    fv1 = utilities.hydrate_fv_from_file(fv1_file)
+    fv2 = utilities.hydrate_fv_from_file(fv2_file)
     os.remove(fv1_file)
     os.remove(fv2_file)
     if fv1.shape[0] != constants.FV_DIM:
@@ -31,9 +28,7 @@ def _generate_fvs(matlab_dir, param_dir, file1, file2):
 def decide(matlab_dir, param_dir, file1, file2):
     try:
         fv1, fv2 = _generate_fvs(matlab_dir, param_dir, file1, file2)
-        global _W, _b
-        if _W is None and _b is None:
-            _b, _W = cPickle.load(open(os.path.join(param_dir, constants.B_W_FILE), 'rb'))
+        _b, _W = cPickle.load(open(os.path.join(param_dir, constants.B_W_FILE), 'rb'))
         decision = utilities.get_distance(_W, _b, fv1, fv2) >= 0
     except Exception as e:
         raise e

@@ -104,9 +104,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', default=None, type=int, help="Use a specific b.")
     parser.add_argument('-debug', action='store_true', help="Debug mode.")
-    parser.add_argument('-data', required=True, type=str, help="Give dataset directory.")
+    parser.add_argument('-data', required=True, type=str, help="Give FV dataset directory.")
     parser.add_argument('-params', type=str, help="Dir to dump serializations to.")
     parser.add_argument('-dl', action='store_true', help="Deep Learning mode.")
     parser.add_argument('-v', action='store_true', help="Verbose mode.")
     args = vars(parser.parse_args())
-    run(data_dir=args['data'], param_dir=args['params'], b=args['b'], deep_learning=args['dl'], debug=args['debug'], verbose=args['v'])
+    run(data_dir=args['data'], param_dir=args['params'],
+        b=args['b'], deep_learning=args['dl'], debug=args['debug'], verbose=args['v'])
