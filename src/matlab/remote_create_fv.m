@@ -14,6 +14,6 @@ function remote_create_fv(in1, out1, in2, out2, param_dir)
         exit(1);
     end
     dlmwrite(out1, fv1);
-    dlmwrite(out2, fv1);
+    dlmwrite(out2, fv2);
     exit(0);
 end
