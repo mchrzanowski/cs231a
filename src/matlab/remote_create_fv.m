@@ -1,6 +1,6 @@
-function remote_create_fv(in1, out1, in2, out2, param_dir)
+function remote_create_fv(in1, out1, in2, out2, param_dir, vlfeat_dir)
     if exist('vl_fisher') == 0
-        run('~/vlfeat-0.9.18/toolbox/vl_setup.m');
+        run(strcat(vlfeat_dir, '/toolbox/vl_setup.m'));
     end
     try
         mean_file = strcat(param_dir, '/means');
