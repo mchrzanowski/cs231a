@@ -1,5 +1,5 @@
 import constants
-import datetime
+from datetime import datetime
 import cPickle
 import utilities
 import os
@@ -8,7 +8,7 @@ _W = None
 _b = None
 
 def _generate_fvs(matlab_src_dir, matlab_bin, param_dir, file1, file2):
-    now = datetime.now()
+    now = int(datetime.now().strftime("%s"))
     fv1_file = '/tmp/fv1_%s' % now
     fv2_file = '/tmp/fv2_%s' % now
     if os.path.isfile(fv1_file): os.remove(fv1_file)
