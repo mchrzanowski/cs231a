@@ -7,15 +7,15 @@ import os
 _W = None
 _b = None
 
-def _generate_fvs(matlab_src_dir, matlab_bin, param_dir, file1, file2):
+def _generate_fvs(matlab_src_dir, param_dir, file1, file2):
     now = int(datetime.now().strftime("%s"))
     fv1_file = '/tmp/fv1_%s' % now
     fv2_file = '/tmp/fv2_%s' % now
     if os.path.isfile(fv1_file): os.remove(fv1_file)
     if os.path.isfile(fv2_file): os.remove(fv2_file)
 
-    cmd = """cd %s; %s -nosplash -nodesktop -nojvm -r "remote_create_fv('%s', '%s', '%s', '%s', '%s')" > /dev/null""" % (matlab_src_dir,
-        matlab_bin, file1, fv1_file, file2, fv2_file, param_dir)
+    cmd = """cd %s; matlab -nosplash -nodesktop -nojvm -r "remote_create_fv('%s', '%s', '%s', '%s', '%s')" > /dev/null""" % (matlab_src_dir,
+        file1, fv1_file, file2, fv2_file, param_dir)
     return_value = os.system(cmd)
     if return_value != 0: raise Exception('error from matlab! error code: %d' % return_value)
 
@@ -30,9 +30,9 @@ def _generate_fvs(matlab_src_dir, matlab_bin, param_dir, file1, file2):
 
     return fv1, fv2
 
-def decide(matlab_dir, matlab_bin, param_dir, file1, file2):
+def decide(matlab_dir, param_dir, file1, file2):
     try:
-        fv1, fv2 = _generate_fvs(matlab_dir, matlab_bin, param_dir, file1, file2)
+        fv1, fv2 = _generate_fvs(matlab_dir, param_dir, file1, file2)
         global _W, _b
         if _W is None or _b is None:
             _b, _W = cPickle.load(open(os.path.join(param_dir, constants.B_W_FILE), 'rb'))
