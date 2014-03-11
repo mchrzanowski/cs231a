@@ -17,7 +17,7 @@ class Dataset(object):
         print 'Param Dir: %s' % self.param_dir
 
 class DevDataset(Dataset):
-    def __init__(self, base_dir, param_dir, train_filename=constants.DEV_TRAIN_PAIR_FILE,
+    def __init__(self, base_dir, param_dir=None, train_filename=constants.DEV_TRAIN_PAIR_FILE,
     test_filename=constants.DEV_TEST_PAIR_FILE):
         self.base_dir = base_dir
         self.param_dir = param_dir
@@ -89,7 +89,7 @@ class DevDataset(Dataset):
         return images_required, same_person_pairs, diff_person_pairs
 
 class RestrictedDataset(DevDataset):
-    def __init__(self, base_dir, param_dir, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, param_dir=None, filename=constants.PAIR_FILE, split=random.randint(1, 10)):
         self.base_dir = base_dir
         self.param_dir = param_dir
         self.split = split
@@ -149,7 +149,7 @@ class RestrictedDataset(DevDataset):
             test_images, test_same_pairs, test_diff_pairs
 
 class UnrestrictedDataset(DevDataset):
-    def __init__(self, base_dir, param_dir, filename=constants.PEOPLE_FILE, split=random.randint(1, 10)):
+    def __init__(self, base_dir, param_dir=None, filename=constants.PEOPLE_FILE, split=random.randint(1, 10)):
         self.base_dir = base_dir
         self.param_dir = param_dir
         self.split = split
