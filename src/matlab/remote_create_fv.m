@@ -1,4 +1,7 @@
-function remote_create_fv(in, out, param_dir)
+function remote_create_fv(in1, out1, in2, out2, param_dir, vlfeat_dir)
+    if exist('vl_fisher') == 0
+        run(strcat(vlfeat_dir, '/toolbox/vl_setup.m'));
+    end
     try
         mean_file = strcat(param_dir, '/means');
         m = dlmread(mean_file);
@@ -8,11 +11,12 @@ function remote_create_fv(in, out, param_dir)
         p = dlmread(prior_file);
         u_file = strcat(param_dir, '/U_matrix');
         u = dlmread(u_file);
-        fv = generateFisherVector(in, u, m, d, p);
+        fv1 = generateFisherVector(in1, u, m, d, p);
+        fv2 = generateFisherVector(in2, u, m, d, p);
     catch err
-        fv = 2;
         exit(1);
     end
-    dlmwrite(out, fv);
+    dlmwrite(out1, fv1);
+    dlmwrite(out2, fv2);
     exit(0);
 end

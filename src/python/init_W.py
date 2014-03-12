@@ -43,9 +43,9 @@ def init_deepnet(dataset, debug=False, verbose=False):
 
 def __deep_learning(fvs, verbose):
     if verbose: print 'Start training denoising autoencoder...'
-    da = dA.train(fvs, hidden_units=fvs.shape[0] // 20,
+    da = dA.train(fvs, hidden_units=fvs.shape[0] // 4,
         learning_rate=0.01, training_epochs=15,
-        batch_size=20, corruption_level=0.3, verbose=verbose)
+        batch_size=1000, corruption_level=0.3, verbose=verbose)
     dfvs = numpy.zeros((da.n_hidden, fvs.shape[1]))
     for i in xrange(fvs.shape[1]):
         val = da.get_hidden_values(fvs[:, i])

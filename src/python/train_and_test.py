@@ -7,15 +7,12 @@ import os
 import pickle
 import utilities
 
-def run(b=None, deep_funneled=False, deep_learning=False, debug=False, verbose=False):
-    
-    base_dir = utilities.get_dataset(deep_funneled)
-    param_file = utilities.convert_to_param_file(deep_learning, deep_funneled)
-    
+def run(data_dir, param_dir=None, b=None, deep_learning=False, debug=False, verbose=False):
+        
     if debug:
-        dataset = dataset_generation.DevDataset(base_dir=base_dir, param_file=param_file)
+        dataset = dataset_generation.DevDataset(base_dir=data_dir, param_dir=param_dir)
     else:
-        dataset = dataset_generation.UnrestrictedDataset(base_dir=base_dir, param_file=param_file, split=1)
+        dataset = dataset_generation.UnrestrictedDataset(base_dir=data_dir, param_dir=param_dir, split=1)
 
     W, b, fvs, images_to_indices, da = train(dataset, b, deep_learning, debug, verbose)
     test(dataset, W, b, 'Train', da=da, fvs=fvs, images_to_indices=images_to_indices, verbose=verbose)
@@ -94,7 +91,7 @@ def train(dataset, b=None, deep_learning=False, debug=False, verbose=True):
         da = None
 
     if debug:
-        W, b = optimization.ssgd(W, dataset, fvs=fvs, iterations=0, cache=False,
+        W, b = optimization.ssgd(W, dataset, fvs=fvs, iterations=0,
             image_to_index=images_to_indices, verbose=verbose, b=b)
     else:
         W, b = optimization.ssgd(W, dataset, fvs=fvs,
@@ -106,9 +103,11 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-b', default=None, type=int, help="Use a specific b.")
-    parser.add_argument('-d', action='store_true', help="Debug mode.")
-    parser.add_argument('-df', action='store_true', help="Deep-Funneled LFW dataset.")
+    parser.add_argument('-debug', action='store_true', help="Debug mode.")
+    parser.add_argument('-data', required=True, type=str, help="Give FV dataset directory.")
+    parser.add_argument('-params', type=str, help="Dir to dump serializations to.")
     parser.add_argument('-dl', action='store_true', help="Deep Learning mode.")
     parser.add_argument('-v', action='store_true', help="Verbose mode.")
     args = vars(parser.parse_args())
-    run(args['b'], args['df'], args['dl'], args['d'], args['v'])
+    run(data_dir=args['data'], param_dir=args['params'],
+        b=args['b'], deep_learning=args['dl'], debug=args['debug'], verbose=args['v'])
