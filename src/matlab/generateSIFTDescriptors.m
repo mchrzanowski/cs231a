@@ -15,8 +15,8 @@ function [descriptors keypts] = generateSIFTDescriptors(img_file)
 
         min_x = max(1, min_x);
         min_y = max(1, min_y);
-        max_x = min(size(img, 1), max_x);
-        max_y = min(size(img, 2), max_y);
+        max_x = min(size(img, 2), max_x);
+        max_y = min(size(img, 1), max_y);
         
         if max_x > min_x && max_y > min_y
             img = img(min_x:max_x, min_y:max_y, :);
