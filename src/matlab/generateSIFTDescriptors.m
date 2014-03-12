@@ -15,15 +15,16 @@ function [descriptors keypts] = generateSIFTDescriptors(img_file)
 
         min_x = max(1, min_x);
         min_y = max(1, min_y);
-        max_x = min(size(img, 1), max_x);
-        max_y = min(size(img, 2), max_y);
-        
+        max_x = min(size(img, 2), max_x);
+        max_y = min(size(img, 1), max_y);
         if max_x > min_x && max_y > min_y
-            img = img(min_x:max_x, min_y:max_y, :);
+            img = img(min_y:max_y, min_x:max_x, :);
         end
     end
 
-    img = rgb2gray(img);
+    if length(size(img)) == 3
+        img = rgb2gray(img);
+    end
     img = single(img);
     img = imresize(img, [img_height, img_width]);   % (numrows, numcols)
 
