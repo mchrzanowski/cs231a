@@ -9,7 +9,7 @@ cd('~/vlfeat-0.9.18/toolbox/')
 vl_setup
 cd(curr_dir)
 
-num_iters=10^7;
+num_iters=10^6;
 params_dir ='~/non_root_df_41k'
 image_dir = '~/lfw-deepfunneled/';
 
@@ -75,8 +75,8 @@ else
     training_labels=[training_labels same];
     
  end
- %save('fv_diff.mat','fv_diff');
- %save('training_labels.mat','training_labels');
+ save('/tmp/fv_diff6.mat','fv_diff');
+ save('/tmp/training_labels6.mat','training_labels');
 end
 c=clock;
 disp(datestr(datenum(c(1),c(2),c(3),c(4),c(5),c(6))));
