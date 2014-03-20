@@ -23,12 +23,12 @@ function generateGMMParams(input_dir, output_dir)
             f_q_output_path_desc = strrep(f_q_output_path_desc, '.jpg', '_descriptor.csv');
             f_q_output_path_keypt = strrep(f_q_output_path_keypt, '.jpg', '_keypts.csv');
             
-            [descriptors keypts] = generateSIFTDescriptors(f_q_img_path);
+            [descriptors other_features] = generateSIFTDescriptors(f_q_img_path);
 
             indx = randsample(1:length(descriptors), 95);
 
             X = [X descriptors(:, indx)];
-            Y = [Y keypts(:, indx)];
+            Y = [Y other_features(:, indx)];
         end
     end
 
